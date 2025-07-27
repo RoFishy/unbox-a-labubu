@@ -11,6 +11,20 @@ local Types = require("@Shared/Types")
 -- // Store
 local PlayerStore = ProfileStore.New("PlayerStore", DataTemplate)
 
+-- // objects
+local PlotsFolder = workspace.Plots
+
+-- // local functions
+local function GetPlayerPlot(Player: Player): Instance?
+	for _, Plot in PlotsFolder:GetChildren() do
+		if Plot:GetAttribute("Owner") and Plot:GetAttribute("Owner") == Player.Name then
+			return Plot
+		end
+	end
+
+	return
+end
+
 -- // Module
 type DataUtilType = {
 	Profiles: { [Player]: any },
@@ -104,6 +118,30 @@ function DataUtil:GetData(Player: Player): Types.UserData?
 end
 
 function DataUtil:CleanupProfile(Player: Player)
+	local Plot = GetPlayerPlot(Player)
+
+	local LabubuData = {} :: Types.LabubuDataInfo
+	if Plot then
+		local Slots = Plot:WaitForChild("Components"):WaitForChild("Slots") :: Folder
+		for _, Slot in Slots:GetChildren() do
+			local LabubuName = Slot:GetAttribute("Labubu")
+			if LabubuName then
+				table.insert(LabubuData, {
+					Name = LabubuName,
+					Slot = Slot.Name,
+				})
+			end
+		end
+	end
+
+	local PlayerData = self:GetData(Player)
+	if PlayerData then
+		PlayerData = table.clone(PlayerData)
+
+		PlayerData.Labubus = LabubuData
+		self:SetData(Player, PlayerData)
+	end
+
 	if self.Profiles[Player] then
 		self.Profiles[Player]:EndSession()
 	end

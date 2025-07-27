@@ -11,9 +11,18 @@ export type ToolInfo = {
 export type UserData = {
 	Cash: number,
 	Tool: number,
+
+	Labubus: { LabubuDataInfo },
+	Backpack: { string },
+	Index: { string },
 }
 
 export type Rarity = "Uncommon" | "Common" | "Rare" | "Epic" | "Legendary" | "Divine" | "Secret"
+
+export type LabubuDataInfo = {
+	Name: string,
+	Slot: string,
+}
 
 export type LabubuInfo = {
 	Income: number,

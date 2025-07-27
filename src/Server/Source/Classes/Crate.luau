@@ -134,6 +134,24 @@ function Crate.TakeDamage(self: Crate, Amount: number)
 
 	self.Config.Health -= Amount
 
+	-- Do the hit effect
+	do
+		local HitEffect = self.Model:FindFirstChild("HitEffect") :: Part
+		if HitEffect then
+			local Attachment = HitEffect:WaitForChild("Attachment")
+			for _, child in Attachment:GetChildren() do
+				if child:IsA("ParticleEmitter") then
+					child = child :: ParticleEmitter
+					child.Enabled = true
+
+					task.delay(0.25, function()
+						child.Enabled = false
+					end)
+				end
+			end
+		end
+	end
+
 	-- Do the model tween
 	do
 		local EndScale: number
@@ -155,6 +173,7 @@ function Crate.TakeDamage(self: Crate, Amount: number)
 			TweenModel.Scale(self.Model, EndScale, 1, Info, function()
 				-- kill myself if im at 0 health
 				if self.Config.Health <= 0 then
+					self:CleanupConnections()
 					TweenModel.Scale(self.Model, 1, 0.00001, TweenInfo.new(0.75), function()
 						local ChosenRarity: Types.Rarity = GetRarity(self.Config.Chances) :: Types.Rarity
 						if ChosenRarity then
@@ -229,22 +248,65 @@ end
 
 function Crate.Spawn(self: Crate, Location: Vector3)
 	self.Model.Parent = workspace
-	self.Primary.Anchored = false
-	self.Model:PivotTo(CFrame.new(Location + Vector3.new(0, 5, 0)))
+	self.Model:PivotTo(CFrame.new(Location + Vector3.new(-3, 6, 4)) * CFrame.Angles(0, math.rad(35), math.rad(15)))
 
-	task.delay(1.5, function()
+	local EndPosition = CFrame.new(Location + Vector3.new(0, -0.8, 0)) * CFrame.Angles(0, 0, 0)
+
+	local Smoke = self.Model:FindFirstChild("Smoke") :: Part
+
+	TweenModel.Position(self.Model, EndPosition, TweenInfo.new(1, Enum.EasingStyle.Exponential), function()
+		if Smoke then
+			local Attachment = Smoke:WaitForChild("Attachment") :: Attachment
+			for _, child in Attachment:GetChildren() do
+				if child:IsA("ParticleEmitter") then
+					child = child :: ParticleEmitter
+
+					child.Enabled = true
+
+					task.delay(0.5, function()
+						child.Enabled = false
+					end)
+				end
+			end
+		end
+	end)
+
+	--[[
+	task.delay(1, function()
+		if Smoke then
+			local Attachment = Smoke:WaitForChild("Attachment") :: Attachment
+			for _, child in Attachment:GetChildren() do
+				if child:IsA("ParticleEmitter") then
+					child = child :: ParticleEmitter
+
+					child.Enabled = true
+
+					task.delay(0.5, function()
+						child.Enabled = false
+					end)
+				end
+			end
+		end
+
 		self.Primary.Anchored = true
 	end)
+	]]
+	--
 end
 
-function Crate.Destroy(self: Crate)
+function Crate.CleanupConnections(self: Crate)
 	for _, v in self._junk do
 		if v.Connected then
 			v:Disconnect()
 		end
 	end
-	self.Destroying:Fire()
 	table.clear(self._junk)
+end
+
+function Crate.Destroy(self: Crate)
+	self:CleanupConnections()
+
+	self.Destroying:Fire()
 	self.Model:Destroy()
 end
 

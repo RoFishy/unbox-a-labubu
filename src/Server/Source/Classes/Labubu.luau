@@ -16,6 +16,10 @@ local GetLabubuInfo = require("@Utility/GetLabubuInfo")
 local Log = require("@Utility/Log")
 local TweenModel = require("@Utility/TweenModel")
 
+local DataUtil = require("@ServerUtility/DataUtil")
+
+local SlotClass = require("@ServerClasses/Slot")
+
 -- // local functions
 local function GetPlayerPlot(Player: Player): Instance?
 	for _, Plot in PlotsFolder:GetChildren() do
@@ -94,6 +98,13 @@ function Labubu.new(Name: string, Owner: Player, Slot: string?): Labubu
 
 	self:SetupDisplayInfo()
 
+	Owner:GetPropertyChangedSignal("Parent"):Connect(function()
+		self.Model:Destroy()
+	end)
+	Owner.Destroying:Connect(function()
+		self.Model:Destroy()
+	end)
+
 	return self :: Labubu
 end
 
@@ -155,14 +166,14 @@ function Labubu.Spawn(self: Labubu)
 				Stand.CFrame * CFrame.new(0, 5, 0) * CFrame.Angles(0, math.rad(-90), 0),
 				TweenInfo.new(1.5),
 				function()
-					self:AddToSlot(OpenSlotName)
+					self:AddToSlot()
 				end
 			)
 		end
 	end)
 end
 
-function Labubu.AddToSlot(self: Labubu, Slot: string)
+function Labubu.AddToSlot(self: Labubu)
 	local Plot = GetPlayerPlot(self.Owner) :: Model
 	if not Plot then
 		return
@@ -175,9 +186,26 @@ function Labubu.AddToSlot(self: Labubu, Slot: string)
 
 	local Slots = Components:WaitForChild("Slots") :: Folder
 
-	local SlotInstance = Slots:FindFirstChild(Slot) :: Folder
+	local SlotInstance = Slots:FindFirstChild(self.Slot) :: Folder
+	local Stand = SlotInstance:WaitForChild("Stand") :: Part
 	if SlotInstance then
+		self.Model:PivotTo(Stand.CFrame * CFrame.new(0, 5, 0) * CFrame.Angles(0, math.rad(-90), 0))
 		SlotInstance:SetAttribute("Labubu", self.Name)
+
+		SlotClass.new(self.Model, self.Owner, self.Config, self.Slot)
+	end
+
+	local PlayerData = DataUtil:GetData(self.Owner)
+	if PlayerData then
+		PlayerData = table.clone(PlayerData)
+
+		if PlayerData.Index then
+			if not table.find(PlayerData.Index, self.Name) then
+				table.insert(PlayerData.Index, self.Name)
+			end
+		end
+
+		DataUtil:SetData(self.Owner, PlayerData)
 	end
 end
 

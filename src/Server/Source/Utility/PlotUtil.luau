@@ -17,11 +17,32 @@ type PlotUtil = {
 	TeleportPlayerToPlot: (self: PlotUtil, Player: Player, Plot: string?) -> (),
 	SetupSpawner: (self: PlotUtil, Plot: string) -> (),
 }
+type SlotModel = Folder & {
+	Stand: Part,
+	Collect: Part & {
+		Attachment: Attachment & {
+			Billboard: BillboardGui & {
+				Frame: Frame & {
+					amount: TextLabel,
+					income: TextLabel,
+				},
+			},
+		},
+		OfflineAttachment: Attachment & {
+			Billboard: BillboardGui & {
+				Frame: Frame & {
+					offline: TextLabel,
+				},
+			},
+		},
+	},
+}
 
 type PlotModel = Model & {
 	Components: Folder & {
 		Teleport: Part,
 		CrateSpawn: Part,
+		Slots: Folder & { SlotModel },
 	},
 }
 
@@ -104,14 +125,23 @@ end
 
 function PlotUtil.ResetPlot(self: PlotUtil, Plot: string)
 	local PlotData: Types.PlotData = self.Plots[Plot]
+	local PlotModel = Plots:FindFirstChild(Plot) :: PlotModel
 
 	if PlotData then
-		if PlotData.Owner then
-			local PlotModel = Plots:FindFirstChild(Plot) :: PlotModel
-			if PlotModel then
+		if PlotModel then
+			for _, Slot in PlotModel.Components.Slots:GetChildren() do
+				local SlotModel = Slot :: SlotModel
+				SlotModel.Collect.Attachment.Billboard.Frame.amount.Text = "$0"
+				SlotModel.Collect.Attachment.Billboard.Frame.income.Text = "$0/s"
+
+				SlotModel.Collect.OfflineAttachment.Billboard.Enabled = false
+			end
+
+			if PlotData.Owner then
 				PlotModel:SetAttribute("Owner", nil)
 			end
 		end
+
 		PlotData.Owner = nil
 	end
 
