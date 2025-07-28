@@ -8,6 +8,8 @@ local PlotUtil = require("@ServerUtility/PlotUtil")
 local HammerTool = require("@ServerClasses/HammerTool")
 local Labubu = require("@ServerClasses/Labubu")
 
+local Replica = require("@Packages/Replica") :: any
+
 -- // Init
 local PlayerService = {
 	SetupCharacters = {},
@@ -43,6 +45,10 @@ function PlayerService:Start()
 				self:_CharacterAdded(Player, Player.Character)
 			end
 		end)
+	end)
+
+	Replica.NewReadyPlayer:Connect(function(Player: Player)
+		DataUtil:SetupReplica(Player)
 	end)
 
 	Players.PlayerRemoving:Connect(function(Player: Player)

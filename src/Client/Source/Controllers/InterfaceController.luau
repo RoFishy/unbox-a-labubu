@@ -11,6 +11,7 @@ local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 -- // Modules/Utils
 local FrameModules = script.Parent.Parent.Interface.Frames
 
+local Backpack = require("@Interface/Components/Backpack")
 local Hud = require("@Interface/Components/Hud")
 
 -- // UI Shit
@@ -39,7 +40,7 @@ end
 local InterfaceController = {}
 
 function InterfaceController:Init()
-	--coreCall("SetCoreGuiEnabled", Enum.CoreGuiType.Backpack, false)
+	coreCall("SetCoreGuiEnabled", Enum.CoreGuiType.Backpack, false)
 
 	for _, FrameModule in FrameModules:GetChildren() do
 		local Frame = (require)(FrameModule)
@@ -55,6 +56,7 @@ function InterfaceController:Start()
 			self:OpenFrame(Name)
 		end,
 	})
+	Backpack()
 end
 
 function InterfaceController:OpenFrame(FrameName: string)

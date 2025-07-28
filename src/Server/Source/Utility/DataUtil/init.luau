@@ -8,26 +8,20 @@ local ProfileStore = require("@ServerPackages/ProfileStore")
 local DataTemplate = require(script.Template)
 local Types = require("@Shared/Types")
 
+local GetPlayerPlot = require("@Utility/GetPlayerPlot")
+
+local Replica = require("@Packages/Replica")
+
 -- // Store
 local PlayerStore = ProfileStore.New("PlayerStore", DataTemplate)
 
--- // objects
-local PlotsFolder = workspace.Plots
-
--- // local functions
-local function GetPlayerPlot(Player: Player): Instance?
-	for _, Plot in PlotsFolder:GetChildren() do
-		if Plot:GetAttribute("Owner") and Plot:GetAttribute("Owner") == Player.Name then
-			return Plot
-		end
-	end
-
-	return
-end
+-- // Const
+local DATA_TOKEN = Replica.Token("PlayerData")
 
 -- // Module
 type DataUtilType = {
 	Profiles: { [Player]: any },
+	Replicas: { [Player]: any },
 	New: (Player) -> (),
 	InitializePlayer: (self: DataUtilType, Player: Player) -> (),
 	_SetupLeaderstats: (self: DataUtilType, Player: Player) -> (),
@@ -35,9 +29,11 @@ type DataUtilType = {
 	GetData: (self: DataUtilType, Player: Player) -> Types.UserData?,
 	SetData: (self: DataUtilType, Player: Player, Data: Types.UserData) -> (),
 	CleanupProfile: (self: DataUtilType, Player: Player) -> (),
+	SetupReplica: (self: DataUtilType, Player: Player) -> (),
 }
 local DataUtil = {
 	Profiles = {} :: { [Player]: any },
+	Replicas = {} :: { [Player]: any },
 } :: DataUtilType
 
 function DataUtil.New(Player: Player)
@@ -86,12 +82,35 @@ function DataUtil:_SetupLeaderstats(Player: Player)
 	end
 end
 
+function DataUtil:SetupReplica(Player: Player)
+	local Profile = self.Profiles[Player]
+	if Player:IsDescendantOf(Players) and not Profile then
+		repeat
+			task.wait()
+		until self.Profiles[Player]
+		Profile = self.Profiles[Player]
+	end
+	local _replica = Replica.New({
+		Token = DATA_TOKEN :: any,
+		Data = Profile.Data,
+	})
+	self.Replicas[Player] = _replica
+	_replica:Subscribe(Player)
+	_replica:Set({ "Index" }, Profile.Data.Index)
+	_replica:Set({ "Backpack" }, Profile.Data.Backpack)
+end
+
 function DataUtil:SetData(Player: Player, Data: Types.UserData)
 	local Profile = self.Profiles[Player]
 	if Profile then
 		Profile.Data = Data
 
 		self:_UpdateLeaderstats(Player)
+		local _replica = self.Replicas[Player]
+		if _replica then
+			_replica:Set({ "Index" }, Data.Index)
+			_replica:Set({ "Backpack" }, Data.Backpack)
+		end
 	end
 end
 

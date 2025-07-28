@@ -6,4 +6,8 @@ return {
 
 	Backpack = {},
 	Labubus = {},
+
+	Index = {},
+
+	ExtraSlots = {},
 } :: Types.UserData

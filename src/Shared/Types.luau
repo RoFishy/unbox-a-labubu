@@ -15,6 +15,8 @@ export type UserData = {
 	Labubus: { LabubuDataInfo },
 	Backpack: { string },
 	Index: { string },
+
+	ExtraSlots: { number },
 }
 
 export type Rarity = "Uncommon" | "Common" | "Rare" | "Epic" | "Legendary" | "Divine" | "Secret"

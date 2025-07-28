@@ -1,4 +1,5 @@
 -- // Services
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local SoundService = game:GetService("SoundService")
 
@@ -33,6 +34,12 @@ function HammerTool.new(Player: Player, Name: number?): HammerToolClass?
 	assert(toolCheck(Player, Name))
 	if not Name then
 		local PlayerData = DataUtil:GetData(Player)
+		if not PlayerData then
+			repeat
+				task.wait(1)
+				PlayerData = DataUtil:GetData(Player)
+			until PlayerData or Player.Parent ~= Players
+		end
 		if PlayerData and PlayerData.Tool then
 			Name = PlayerData.Tool
 		end

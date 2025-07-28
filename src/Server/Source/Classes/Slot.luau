@@ -1,25 +1,15 @@
 -- // Services
 local Players = game:GetService("Players")
+local SoundService = game:GetService("SoundService")
 
 -- // packages
 local t = require("@Packages/t")
 
 local Types = require("@Shared/Types")
 
--- // Objects
-local PlotsFolder = workspace.Plots :: Folder
+local GetPlayerPlot = require("@Utility/GetPlayerPlot")
 
 -- // Functions
-local function GetPlayerPlot(Player: Player): Instance?
-	for _, Plot in PlotsFolder:GetChildren() do
-		if Plot:GetAttribute("Owner") and Plot:GetAttribute("Owner") == Player.Name then
-			return Plot
-		end
-	end
-
-	return
-end
-
 local function GetNextOpenSlot(Slots: Folder): string?
 	for i = 1, #Slots:GetChildren() do
 		local CurrentSlot = Slots:FindFirstChild("Slot" .. i)
@@ -145,6 +135,17 @@ function Slot.Setup(self: Slot)
 			local Player = Players:GetPlayerFromCharacter(hit.Parent)
 			if Player then
 				if Player == self.Owner then
+					local CashSound = SoundService:FindFirstChild("CashCollect") :: Sound
+					if CashSound then
+						CashSound = CashSound:Clone()
+						CashSound.Parent = self.LabubuModel.PrimaryPart
+						CashSound:Play()
+
+						CashSound.Ended:Connect(function()
+							CashSound:Destroy()
+						end)
+					end
+
 					local DataUtil = require("@ServerUtility/DataUtil")
 
 					local PlayerData = DataUtil:GetData(Player)
@@ -179,6 +180,8 @@ function Slot.Destroy(self: Slot)
 	table.clear(self.Threads)
 
 	self.CurrentEarned = 0
+	self.SlotModel.Collect.Attachment.Billboard.Frame.amount.Text = `$0`
+	self.SlotModel.Collect.Attachment.Billboard.Frame.income.Text = `$0/s`
 end
 
 return Slot

@@ -3,7 +3,6 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 -- //  Objects
 local LabubuFolder = ReplicatedStorage.Labubus :: Folder
-local PlotsFolder = workspace.Plots :: Folder
 local NameGradients = ReplicatedStorage.Gradients
 
 -- // Packages
@@ -13,6 +12,7 @@ local t = require("@Packages/t")
 local Types = require("@Shared/Types")
 
 local GetLabubuInfo = require("@Utility/GetLabubuInfo")
+local GetPlayerPlot = require("@Utility/GetPlayerPlot")
 local Log = require("@Utility/Log")
 local TweenModel = require("@Utility/TweenModel")
 
@@ -21,16 +21,6 @@ local DataUtil = require("@ServerUtility/DataUtil")
 local SlotClass = require("@ServerClasses/Slot")
 
 -- // local functions
-local function GetPlayerPlot(Player: Player): Instance?
-	for _, Plot in PlotsFolder:GetChildren() do
-		if Plot:GetAttribute("Owner") and Plot:GetAttribute("Owner") == Player.Name then
-			return Plot
-		end
-	end
-
-	return
-end
-
 local function GetNextOpenSlot(Slots: Folder): string?
 	for i = 1, #Slots:GetChildren() do
 		local CurrentSlot = Slots:FindFirstChild("Slot" .. i)
@@ -207,6 +197,50 @@ function Labubu.AddToSlot(self: Labubu)
 
 		DataUtil:SetData(self.Owner, PlayerData)
 	end
+
+	self:SetupPickupConnection()
+end
+
+function Labubu.SetupPickupConnection(self: Labubu)
+	local Prompt = Instance.new("ProximityPrompt")
+	Prompt.Parent = self.RootPart
+	Prompt.ActionText = "Pick Up"
+	Prompt.RequiresLineOfSight = false
+	Prompt.HoldDuration = 1.5
+
+	Prompt.Triggered:Connect(function(Player: Player)
+		if Player == self.Owner then
+			local PlayerData = DataUtil:GetData(self.Owner)
+			if PlayerData then
+				PlayerData = table.clone(PlayerData)
+
+				if PlayerData.Backpack then
+					table.insert(PlayerData.Backpack, self.Name)
+				end
+
+				DataUtil:SetData(self.Owner, PlayerData)
+			end
+
+			local Plot = GetPlayerPlot(self.Owner) :: Model
+			if not Plot then
+				return
+			end
+
+			local Components = Plot:FindFirstChild("Components") :: Folder
+			if not Components then
+				return
+			end
+
+			local Slots = Components:WaitForChild("Slots") :: Folder
+
+			local SlotInstance = Slots:FindFirstChild(self.Slot) :: Folder
+
+			if SlotInstance then
+				SlotInstance:SetAttribute("Labubu", nil)
+			end
+			self.Model:Destroy()
+		end
+	end)
 end
 
 return Labubu

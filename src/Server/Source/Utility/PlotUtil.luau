@@ -6,6 +6,8 @@ local Types = require("@Shared/Types")
 
 local Crate = require("@ServerClasses/Crate")
 
+local DataUtil = require("@ServerUtility/DataUtil")
+
 type PlotUtil = {
 	Plots: { [string]: Types.PlotData },
 
@@ -43,6 +45,7 @@ type PlotModel = Model & {
 		Teleport: Part,
 		CrateSpawn: Part,
 		Slots: Folder & { SlotModel },
+		ExtraSlots: Folder,
 	},
 }
 
@@ -118,6 +121,22 @@ function PlotUtil.AssignPlot(self: PlotUtil, Player: Player)
 			PlotModel:SetAttribute("Owner", Player.Name)
 		end
 
+		local PlayerData = DataUtil:GetData(Player)
+		if PlayerData then
+			local ExtraSlots = PlayerData.ExtraSlots
+
+			if ExtraSlots then
+				local ExtraSlotsFolder = PlotModel.Components.ExtraSlots
+
+				for _, Slot in ExtraSlots do
+					local ExtraSlotModel = ExtraSlotsFolder:FindFirstChild("Slot" .. Slot) :: SlotModel
+					if ExtraSlotModel then
+						ExtraSlotModel.Parent = PlotModel.Components.Slots
+					end
+				end
+			end
+		end
+
 		self:TeleportPlayerToPlot(Player)
 		self:SetupSpawner(PlotName)
 	end
@@ -135,6 +154,25 @@ function PlotUtil.ResetPlot(self: PlotUtil, Plot: string)
 				SlotModel.Collect.Attachment.Billboard.Frame.income.Text = "$0/s"
 
 				SlotModel.Collect.OfflineAttachment.Billboard.Enabled = false
+			end
+
+			local ExtraSlots
+			if PlotModel.Components:FindFirstChild("ExtraSlots") then
+				ExtraSlots = PlotModel.Components:FindFirstChild("ExtraSlots") :: Folder
+			else
+				ExtraSlots = Instance.new("Folder")
+				ExtraSlots.Parent = PlotModel.Components
+				ExtraSlots.Name = "ExtraSlots"
+			end
+
+			local Slot11 = PlotModel.Components.Slots:FindFirstChild("Slot11")
+			if Slot11 then
+				Slot11.Parent = ExtraSlots
+			end
+
+			local Slot12 = PlotModel.Components.Slots:FindFirstChild("Slot12")
+			if Slot12 then
+				Slot12.Parent = ExtraSlots
 			end
 
 			if PlotData.Owner then
