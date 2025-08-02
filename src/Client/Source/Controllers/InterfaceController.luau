@@ -8,11 +8,18 @@ local TweenService = game:GetService("TweenService")
 local LocalPlayer = Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 
+-- // Remotes
+local Remotes = require("@Shared/Remotes")
+
 -- // Modules/Utils
 local FrameModules = script.Parent.Parent.Interface.Frames
 
 local Backpack = require("@Interface/Components/Backpack")
 local Hud = require("@Interface/Components/Hud")
+local MakeNotification = require("@Interface/Components/MakeNotification")
+local NPCDialogue = require("@Interface/Components/NPCDialogue")
+
+local Signals = require("@ClientUtility/Signals")
 
 -- // UI Shit
 local MainUI = PlayerGui:WaitForChild("UI") :: ScreenGui
@@ -57,6 +64,9 @@ function InterfaceController:Start()
 		end,
 	})
 	Backpack()
+	NPCDialogue()
+
+	Remotes.ShowNotification:connect(MakeNotification)
 end
 
 function InterfaceController:OpenFrame(FrameName: string)
@@ -120,6 +130,7 @@ function InterfaceController:CloseAllFrames()
 			continue
 		end
 	end
+	Signals.CloseFrame:Fire()
 end
 
 return InterfaceController

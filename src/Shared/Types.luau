@@ -6,6 +6,16 @@ export type CrateConfig = {
 
 export type ToolInfo = {
 	Damage: number,
+	Price: number,
+}
+
+export type DialogueOption = {
+	Option: string,
+	Callback: () -> ()?,
+}
+
+export type NPCDialogueOptions = {
+	[number]: DialogueOption,
 }
 
 export type UserData = {

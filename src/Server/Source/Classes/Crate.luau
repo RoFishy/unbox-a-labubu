@@ -2,6 +2,7 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local SoundService = game:GetService("SoundService")
+local TweenService = game:GetService("TweenService")
 
 -- // Obj
 local CratesFolder: Folder = ReplicatedStorage.Crates
@@ -12,6 +13,8 @@ local Signal = require("@Packages/Signal")
 local t = require("@Packages/t")
 
 -- // Utils
+local Remotes = require("@Shared/Remotes")
+
 local Log = require("@Utility/Log")
 local TweenModel = require("@Utility/TweenModel")
 
@@ -74,6 +77,7 @@ type CrateData = {
 	Name: string,
 	Owner: Player,
 	Config: Types.CrateConfig,
+	MaxHealth: number,
 	Model: Model,
 	Primary: Part,
 	Destroying: typeof(Signal.new()),
@@ -94,6 +98,7 @@ function Crate.new(Name: string, SpawnLocation: Vector3, Owner: Player): Crate
 
 	if CrateConfig[Name] then
 		self.Config = table.clone(CrateConfig[Name]) :: Types.CrateConfig
+		self.MaxHealth = self.Config.Health
 	else
 		Log.Error(`No configuration found for crate: {Name}`)
 	end
@@ -121,6 +126,33 @@ end
 function Crate.Init(self: Crate, SpawnLocation: Vector3)
 	self:Spawn(SpawnLocation)
 	self:SetupConnections()
+	self:SetupAttachment()
+end
+
+function Crate.SetupAttachment(self: Crate)
+	local Attachment = self.Primary:WaitForChild("Attachment") :: Attachment
+
+	if Attachment then
+		local PercentageLabel = Attachment:WaitForChild("BillboardGui")
+			:WaitForChild("Main")
+			:WaitForChild("ProgressBar")
+			:WaitForChild("Amount")
+			:WaitForChild("Percentage") :: TextLabel
+		PercentageLabel.Text = self.Name
+	end
+end
+
+function Crate.UpdateAttachment(self: Crate)
+	local Attachment = self.Primary:WaitForChild("Attachment") :: Attachment
+	if Attachment then
+		local ProgressBar = Attachment:WaitForChild("BillboardGui")
+			:WaitForChild("Main")
+			:WaitForChild("ProgressBar")
+			:WaitForChild("Progress")
+
+		local EndXValue = 1 * (self.Config.Health / self.MaxHealth)
+		TweenService:Create(ProgressBar, TweenInfo.new(0.2), { Size = UDim2.new(EndXValue, 0, 1, 0) }):Play()
+	end
 end
 
 function Crate.TakeDamage(self: Crate, Amount: number)
@@ -133,6 +165,8 @@ function Crate.TakeDamage(self: Crate, Amount: number)
 	end)
 
 	self.Config.Health -= Amount
+
+	self:UpdateAttachment()
 
 	-- Do the hit effect
 	do
@@ -214,21 +248,26 @@ function Crate.SetupConnections(self: Crate)
 				local Character = Tool.Parent :: Model?
 				if Character then
 					if Character.Name == self.Owner.Name then
-						local Player = Players:GetPlayerFromCharacter(Character)
-						if Player then
-							local Base = GetPlayerPlot(Player)
-							if Base then
-								local Slots = Base:WaitForChild("Components"):WaitForChild("Slots") :: Folder
-								local OpenSlot = GetNextOpenSlot(Slots)
-								if not OpenSlot then
-									return
-								end
-							end
-						end
-
 						-- only have it do dmg if its attack lmfao
 						if Tool:GetAttribute("Attacking") then
 							Tool:SetAttribute("Attacking", nil)
+
+							local Player = Players:GetPlayerFromCharacter(Character)
+							if Player then
+								local Base = GetPlayerPlot(Player)
+								if Base then
+									local Slots = Base:WaitForChild("Components"):WaitForChild("Slots") :: Folder
+									local OpenSlot = GetNextOpenSlot(Slots)
+									if not OpenSlot then
+										return Remotes.ShowNotification:fire(
+											Player,
+											"You have no open slots!",
+											Color3.fromRGB(255, 0, 0),
+											"Error"
+										)
+									end
+								end
+							end
 							-- get the configuration for the tools
 
 							local Name = tonumber(Tool.Name)

@@ -1,5 +1,6 @@
 -- // Services
 local Players = game:GetService("Players")
+local SocialService = game:GetService("SocialService")
 
 -- // Player
 local LocalPlayer = Players.LocalPlayer
@@ -9,6 +10,8 @@ local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 local Button = require("@ClientUtility/Button")
 
 local GetPlayerPlot = require("@Utility/GetPlayerPlot")
+
+local CashLabel = require("@Interface/Components/CashLabel")
 
 -- // obj
 local Teleports = workspace.Teleports :: Folder & { Part }
@@ -28,6 +31,8 @@ local StarterPack = Hud:WaitForChild("StarterPack") :: TextButton
 return function(props: {
 	OpenFrame: (FrameName: string) -> (),
 })
+	CashLabel()
+
 	for _, Instance in LeftButtons:GetChildren() do
 		if Instance:IsA("TextButton") or Instance:IsA("ImageButton") then
 			local button: TextButton | ImageButton = Instance
@@ -42,9 +47,17 @@ return function(props: {
 		if Instance:IsA("TextButton") or Instance:IsA("ImageButton") then
 			local button: TextButton | ImageButton = Instance
 
-			Button(button, function()
-				props.OpenFrame(button.Name)
-			end)
+			if button.Name == "Invite" then
+				Button(button, function()
+					if SocialService:CanSendGameInviteAsync(LocalPlayer) then
+						SocialService:PromptGameInvite(LocalPlayer)
+					end
+				end)
+			else
+				Button(button, function()
+					props.OpenFrame(button.Name)
+				end)
+			end
 		end
 	end
 

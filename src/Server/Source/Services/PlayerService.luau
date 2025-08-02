@@ -36,12 +36,17 @@ function PlayerService:Start()
 		if Player.Character then
 			self:_CharacterAdded(Player, Player.Character)
 		end
-		Player.CharacterAdded:Connect(function(Character: Model)
-			self:_CharacterAdded(Player, Character)
+		task.delay(2, function()
+			Player.CharacterAdded:Connect(function(Character: Model)
+				self:_CharacterAdded(Player, Character)
+			end)
 		end)
 
 		task.delay(5, function()
 			if Player.Character then
+				if table.find(self.SetupCharacters, Player.Name) then
+					return
+				end
 				self:_CharacterAdded(Player, Player.Character)
 			end
 		end)
@@ -61,23 +66,12 @@ function PlayerService:Start()
 	end)
 end
 
-function PlayerService:_CharacterAdded(Player: Player, Character: Model)
-	if table.find(self.SetupCharacters, Player.Name) then
-		return
-	end
-
+function PlayerService:_CharacterAdded(Player: Player, _: Model)
 	table.insert(self.SetupCharacters, Player.Name)
 
 	PlotUtil:TeleportPlayerToPlot(Player)
 
 	HammerTool.new(Player)
-
-	local Humanoid = Character:WaitForChild("Humanoid") :: Humanoid
-
-	Humanoid.Died:Connect(function()
-		table.remove(self.SetupCharacters, table.find(self.SetupCharacters, Player.Name))
-		self:_CharacterAdded(Player, Character)
-	end)
 end
 
 return PlayerService

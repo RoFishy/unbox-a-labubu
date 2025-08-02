@@ -129,12 +129,20 @@ function Slot.Setup(self: Slot)
 		end)
 	)
 
+	local Debounce = false
 	table.insert(
 		self.Connections,
 		self.SlotModel.Collect.Touched:Connect(function(hit)
 			local Player = Players:GetPlayerFromCharacter(hit.Parent)
 			if Player then
 				if Player == self.Owner then
+					if Debounce then
+						return
+					end
+					Debounce = true
+					task.delay(1, function()
+						Debounce = false
+					end)
 					local CashSound = SoundService:FindFirstChild("CashCollect") :: Sound
 					if CashSound then
 						CashSound = CashSound:Clone()

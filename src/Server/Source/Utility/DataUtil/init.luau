@@ -30,6 +30,7 @@ type DataUtilType = {
 	SetData: (self: DataUtilType, Player: Player, Data: Types.UserData) -> (),
 	CleanupProfile: (self: DataUtilType, Player: Player) -> (),
 	SetupReplica: (self: DataUtilType, Player: Player) -> (),
+	SaveBaseData: (self: DataUtilType, Player: Player) -> (),
 }
 local DataUtil = {
 	Profiles = {} :: { [Player]: any },
@@ -65,6 +66,18 @@ end
 
 function DataUtil:InitializePlayer(Player: Player)
 	self:_SetupLeaderstats(Player)
+
+	task.spawn(function()
+		while task.wait(120) do
+			if Player and Player:IsDescendantOf(Players) then
+				self:SaveBaseData(Player)
+			end
+		end
+	end)
+
+	task.delay(5, function()
+		self:SaveBaseData(Player)
+	end)
 end
 
 function DataUtil:_SetupLeaderstats(Player: Player)
@@ -98,6 +111,7 @@ function DataUtil:SetupReplica(Player: Player)
 	_replica:Subscribe(Player)
 	_replica:Set({ "Index" }, Profile.Data.Index)
 	_replica:Set({ "Backpack" }, Profile.Data.Backpack)
+	_replica:Set({ "Cash" }, Profile.Data.Cash)
 end
 
 function DataUtil:SetData(Player: Player, Data: Types.UserData)
@@ -110,6 +124,7 @@ function DataUtil:SetData(Player: Player, Data: Types.UserData)
 		if _replica then
 			_replica:Set({ "Index" }, Data.Index)
 			_replica:Set({ "Backpack" }, Data.Backpack)
+			_replica:Set({ "Cash" }, Data.Cash)
 		end
 	end
 end
@@ -136,7 +151,7 @@ function DataUtil:GetData(Player: Player): Types.UserData?
 	end
 end
 
-function DataUtil:CleanupProfile(Player: Player)
+function DataUtil:SaveBaseData(Player: Player)
 	local Plot = GetPlayerPlot(Player)
 
 	local LabubuData = {} :: Types.LabubuDataInfo
@@ -160,6 +175,10 @@ function DataUtil:CleanupProfile(Player: Player)
 		PlayerData.Labubus = LabubuData
 		self:SetData(Player, PlayerData)
 	end
+end
+
+function DataUtil:CleanupProfile(Player: Player)
+	self:SaveBaseData(Player)
 
 	if self.Profiles[Player] then
 		self.Profiles[Player]:EndSession()
