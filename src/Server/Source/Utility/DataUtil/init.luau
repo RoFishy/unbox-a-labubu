@@ -5,7 +5,7 @@ local Players = game:GetService("Players")
 local ProfileStore = require("@ServerPackages/ProfileStore")
 
 -- // Modules
-local DataTemplate = require(script.Template)
+local DataTemplate = (require)(script.Template)
 local Types = require("@Shared/Types")
 
 local GetPlayerPlot = require("@Utility/GetPlayerPlot")

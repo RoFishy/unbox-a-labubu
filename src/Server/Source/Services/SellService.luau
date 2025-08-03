@@ -24,6 +24,7 @@ function SellService:Start()
 						if Info then
 							Data.Cash += Info.SellPrice
 							table.remove(Data.Backpack, table.find(Data.Backpack, LabubuName))
+							break
 						end
 					end
 				end

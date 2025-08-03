@@ -1,4 +1,4 @@
-local Types = require(script.Parent.Parent:WaitForChild("Types"))
+local Types = require("@Shared/Types")
 
 return {
 	["Common"] = {

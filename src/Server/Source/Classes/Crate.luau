@@ -1,8 +1,8 @@
 -- // Services
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
 local SoundService = game:GetService("SoundService")
-local TweenService = game:GetService("TweenService")
 
 -- // Obj
 local CratesFolder: Folder = ReplicatedStorage.Crates
@@ -22,6 +22,8 @@ local GetRandomDictionaryIndex = require("@Utility/GetRandomDictionaryIndex")
 local GetRarity = require("@Utility/GetRarity")
 
 local Types = require("@Shared/Types")
+
+local Spring = require("@Utility/Spring")
 
 local CrateConfig = require("@Config/Crates")
 local LabubuConfig = require("@Config/Labubus")
@@ -139,9 +141,29 @@ function Crate.SetupAttachment(self: Crate)
 			:WaitForChild("Amount")
 			:WaitForChild("Percentage") :: TextLabel
 		PercentageLabel.Text = self.Name
+
+		local ProgressBar = Attachment:WaitForChild("BillboardGui")
+			:WaitForChild("Main")
+			:WaitForChild("ProgressBar")
+			:WaitForChild("Progress") :: Frame
+
+		local _Spring = Spring.new(Vector3.zero)
+		_Spring.Damping = 1
+		_Spring.Speed = 15
+
+		table.insert(self._junk, (RunService.Heartbeat:Connect(function()
+			local EndXValue = 1 * (self.Config.Health / self.MaxHealth)
+			_Spring.Target = Vector3.new(EndXValue, 0, 0)
+
+			ProgressBar.Size = UDim2.new(_Spring.Position.X, 0, 1, 0)
+		end)))
 	end
 end
 
+-- outdated method; this was using tweens, i switched to springs;
+-- springs actually perform similarly to tweens tbh and theyre cooler
+-- so it tohught y not use thos einstead ofo tweens
+--[[
 function Crate.UpdateAttachment(self: Crate)
 	local Attachment = self.Primary:WaitForChild("Attachment") :: Attachment
 	if Attachment then
@@ -154,6 +176,7 @@ function Crate.UpdateAttachment(self: Crate)
 		TweenService:Create(ProgressBar, TweenInfo.new(0.2), { Size = UDim2.new(EndXValue, 0, 1, 0) }):Play()
 	end
 end
+]]
 
 function Crate.TakeDamage(self: Crate, Amount: number)
 	local HitSound = SoundService:WaitForChild("HitBox"):Clone() :: Sound
@@ -166,7 +189,7 @@ function Crate.TakeDamage(self: Crate, Amount: number)
 
 	self.Config.Health -= Amount
 
-	self:UpdateAttachment()
+	--self:UpdateAttachment()
 
 	-- Do the hit effect
 	do
