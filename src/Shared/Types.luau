@@ -1,12 +1,16 @@
 export type CrateConfig = {
 	Health: number,
 
+	SpawnChance: number,
+
 	Chances: { [Rarity]: number },
 }
 
 export type ToolInfo = {
 	Damage: number,
 	Price: number,
+	Image: string,
+	Gamepass: number?,
 }
 
 export type DialogueOption = {
@@ -20,13 +24,23 @@ export type NPCDialogueOptions = {
 
 export type UserData = {
 	Cash: number,
-	Tool: number,
+
+	Upgrades: {
+		Cash: number,
+		Luck: number,
+		Tool: number,
+	},
 
 	Labubus: { LabubuDataInfo },
 	Backpack: { string },
 	Index: { string },
 
 	ExtraSlots: { number },
+}
+
+export type UpgradeInfo<T> = {
+	Price: number,
+	NewValue: T,
 }
 
 export type Rarity = "Uncommon" | "Common" | "Rare" | "Epic" | "Legendary" | "Divine" | "Secret"

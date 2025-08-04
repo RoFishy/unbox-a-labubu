@@ -10,6 +10,8 @@ type Remotes = Remo.Remotes<{
 
 	SellLabubu: Remo.ClientToServer<(string)>,
 	SellAllLabubus: Remo.ClientToServer<>,
+
+	PurchaseUpgrade: Remo.ClientToServer<(string)>,
 }>
 
 local Remotes: Remotes = Remo.createRemotes({
@@ -21,6 +23,8 @@ local Remotes: Remotes = Remo.createRemotes({
 
 	SellLabubu = Remo.remote(t.string),
 	SellAllLabubus = Remo.remote(),
+
+	PurchaseUpgrade = Remo.remote(t.string),
 })
 
-return Remotes
+return Remotes :: Remotes

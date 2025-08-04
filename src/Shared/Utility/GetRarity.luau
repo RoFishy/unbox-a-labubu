@@ -1,10 +1,25 @@
-local function GetRarity(Array: { [string | any]: number }, RareChances: { string }?, Luck: number?): string?
+local Types = require("@Shared/Types")
+
+local function GetRarity(
+	Array: { [string | any]: number | { SpawnChance: number } | Types.CrateConfig },
+	RareChances: { string }?,
+	Luck: number?
+): string?
 	Luck = Luck or 1
 	if not Luck then
 		return
 	end
 
-	local AdjustedChances = table.clone(Array)
+	local AdjustedChances: { [string]: number } = {}
+	for Name, Value: number | { SpawnChance: number } in Array do
+		if typeof(Value) == "number" then
+			AdjustedChances[Name] = Value
+		elseif typeof(Value) == "table" then
+			if Value.SpawnChance then
+				AdjustedChances[Name] = Value.SpawnChance
+			end
+		end
+	end
 
 	if RareChances then
 		for _, _Name in RareChances do

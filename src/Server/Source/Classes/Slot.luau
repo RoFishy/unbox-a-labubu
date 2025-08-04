@@ -9,6 +9,8 @@ local Types = require("@Shared/Types")
 
 local GetPlayerPlot = require("@Utility/GetPlayerPlot")
 
+local DataUtil = require("@ServerUtility/DataUtil")
+
 -- // Functions
 local function GetNextOpenSlot(Slots: Folder): string?
 	for i = 1, #Slots:GetChildren() do
@@ -122,7 +124,13 @@ function Slot.Setup(self: Slot)
 		self.Threads,
 		task.spawn(function()
 			while task.wait(1) do
-				self.CurrentEarned += self.Config.Income
+				local PlayerData = DataUtil:GetData(self.Owner)
+				local CashMultiplier = 1
+				if PlayerData then
+					CashMultiplier = PlayerData.Upgrades.Cash or 1
+				end
+
+				self.CurrentEarned += self.Config.Income * CashMultiplier
 
 				self.SlotModel.Collect.Attachment.Billboard.Frame.amount.Text = `${self.CurrentEarned}`
 			end
@@ -153,8 +161,6 @@ function Slot.Setup(self: Slot)
 							CashSound:Destroy()
 						end)
 					end
-
-					local DataUtil = require("@ServerUtility/DataUtil")
 
 					local PlayerData = DataUtil:GetData(Player)
 					if PlayerData then

@@ -2,7 +2,12 @@ local Types = require("@Shared/Types")
 
 return {
 	Cash = 0,
-	Tool = 1,
+
+	Upgrades = {
+		Cash = 1,
+		Luck = 1,
+		Tool = 1,
+	},
 
 	Backpack = {},
 	Labubus = {},

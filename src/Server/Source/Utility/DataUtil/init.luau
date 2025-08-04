@@ -31,6 +31,7 @@ type DataUtilType = {
 	CleanupProfile: (self: DataUtilType, Player: Player) -> (),
 	SetupReplica: (self: DataUtilType, Player: Player) -> (),
 	SaveBaseData: (self: DataUtilType, Player: Player) -> (),
+	SetReplica: (self: DataUtilType, Player: Player, Data: Types.UserData) -> (),
 }
 local DataUtil = {
 	Profiles = {} :: { [Player]: any },
@@ -109,9 +110,7 @@ function DataUtil:SetupReplica(Player: Player)
 	})
 	self.Replicas[Player] = _replica
 	_replica:Subscribe(Player)
-	_replica:Set({ "Index" }, Profile.Data.Index)
-	_replica:Set({ "Backpack" }, Profile.Data.Backpack)
-	_replica:Set({ "Cash" }, Profile.Data.Cash)
+	self:SetReplica(Player, Profile.Data)
 end
 
 function DataUtil:SetData(Player: Player, Data: Types.UserData)
@@ -120,12 +119,17 @@ function DataUtil:SetData(Player: Player, Data: Types.UserData)
 		Profile.Data = Data
 
 		self:_UpdateLeaderstats(Player)
-		local _replica = self.Replicas[Player]
-		if _replica then
-			_replica:Set({ "Index" }, Data.Index)
-			_replica:Set({ "Backpack" }, Data.Backpack)
-			_replica:Set({ "Cash" }, Data.Cash)
-		end
+		self:SetReplica(Player, Data)
+	end
+end
+
+function DataUtil:SetReplica(Player: Player, Data: Types.UserData)
+	local _replica = self.Replicas[Player]
+	if _replica then
+		_replica:Set({ "Index" }, Data.Index)
+		_replica:Set({ "Backpack" }, Data.Backpack)
+		_replica:Set({ "Cash" }, Data.Cash)
+		_replica:Set({ "Upgrades" }, Data.Upgrades)
 	end
 end
 

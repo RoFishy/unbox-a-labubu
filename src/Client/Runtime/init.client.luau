@@ -3,6 +3,8 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Controllers = ReplicatedStorage:WaitForChild("Client"):WaitForChild("Controllers")
 
+local Replica = require("@Packages/Replica") :: any
+
 -- // Modules
 local Bootstrapper = require("@Shared/Bootstrapper")
 local Log = require("@Utility/Log")
@@ -12,3 +14,5 @@ Log.Warn("Starting client")
 Bootstrapper.load(Controllers):await()
 local EndTime = os.clock() - StartTime
 Log.Warn(("Loading complete, took %.2f seconds"):format(EndTime))
+
+Replica.RequestData()

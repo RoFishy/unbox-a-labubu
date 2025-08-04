@@ -40,8 +40,8 @@ function HammerTool.new(Player: Player, Name: number?): HammerToolClass?
 				PlayerData = DataUtil:GetData(Player)
 			until PlayerData or Player.Parent ~= Players
 		end
-		if PlayerData and PlayerData.Tool then
-			Name = PlayerData.Tool
+		if PlayerData and PlayerData.Upgrades.Tool then
+			Name = PlayerData.Upgrades.Tool
 		end
 	end
 

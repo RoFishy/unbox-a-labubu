@@ -8,6 +8,10 @@ local Crate = require("@ServerClasses/Crate")
 
 local DataUtil = require("@ServerUtility/DataUtil")
 
+local GetRarity = require("@Utility/GetRarity")
+
+local CrateConfig = require("@Config/Crates")
+
 type PlotUtil = {
 	Plots: { [string]: Types.PlotData },
 
@@ -102,7 +106,11 @@ function PlotUtil.SetupSpawner(self: PlotUtil, Plot: string)
 		if Owner then
 			self.Plots[Plot].Spawner = task.spawn(function()
 				while true do
-					local _Crate = Crate.new("Crate", PlotModel.Components.CrateSpawn.Position, Owner)
+					local RandomCrate = GetRarity(CrateConfig)
+
+					local ChosenCrate = RandomCrate or "Crate"
+
+					local _Crate = Crate.new(ChosenCrate, PlotModel.Components.CrateSpawn.Position, Owner)
 					self.Plots[Plot].CurrentCrate = _Crate
 					_Crate.Destroying:Wait()
 				end

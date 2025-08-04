@@ -42,8 +42,6 @@ function Index.Init()
 			Index:SetMemes()
 		end)
 	end)
-
-	Replica.RequestData()
 end
 
 function Index:Start()
