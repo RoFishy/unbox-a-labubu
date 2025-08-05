@@ -144,6 +144,8 @@ function CrateShopService:Restock(time: number)
 		if RandomNumber <= Config.RestockChance then
 			local RestockAmount = rng:NextInteger(Config.RestockMin, Config.RestockMax)
 			CurrentStockData[CrateName] = RestockAmount
+		else
+			CurrentStockData[CrateName] = 0
 		end
 	end
 

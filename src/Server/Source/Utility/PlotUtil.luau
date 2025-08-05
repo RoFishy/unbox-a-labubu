@@ -24,6 +24,7 @@ type PlotUtil = {
 	ResetPlot: (self: PlotUtil, Plot: string) -> (),
 	TeleportPlayerToPlot: (self: PlotUtil, Player: Player, Plot: string?) -> (),
 	SetupSpawner: (self: PlotUtil, Plot: string) -> (),
+	SetupSkipPrompt: (self: PlotUtil, Plot: string) -> (),
 }
 type SlotModel = Folder & {
 	Stand: Part,
@@ -52,6 +53,11 @@ type PlotModel = Model & {
 		CrateSpawn: Part,
 		Slots: Folder & { SlotModel },
 		ExtraSlots: Folder,
+		Skip: Model & {
+			Main: Part & {
+				ProximityPrompt: ProximityPrompt,
+			},
+		},
 	},
 }
 
@@ -66,7 +72,21 @@ function PlotUtil.Setup(self: PlotUtil)
 			Owner = nil,
 		}
 		self:ResetPlot(PlotModel.Name)
+		self:SetupSkipPrompt(PlotModel.Name)
 	end
+end
+
+function PlotUtil.SetupSkipPrompt(self: PlotUtil, Plot: string)
+	local PlotModel = Plots:FindFirstChild(Plot) :: PlotModel
+
+	PlotModel.Components.Skip.Main.ProximityPrompt.Triggered:Connect(function(Player: Player)
+		if self.Plots[Plot].CurrentCrate then
+			if self.Plots[Plot].Owner == Player then
+				local _Crate = self.Plots[Plot].CurrentCrate :: Crate.Crate
+				_Crate:Destroy()
+			end
+		end
+	end)
 end
 
 function PlotUtil.GetEmptyPlot(self: PlotUtil): string?
@@ -118,19 +138,7 @@ function PlotUtil.SetupSpawner(self: PlotUtil, Plot: string)
 					end
 
 					local _Crate = Crate.new(ChosenCrate, PlotModel.Components.CrateSpawn.Position, Owner)
-					self.Plots[Plot].CurrentCrate = _Crate
-
-					local Prompt = Instance.new("ProximityPrompt")
-					Prompt.Parent = _Crate.Primary
-					Prompt.RequiresLineOfSight = false
-					Prompt.MaxActivationDistance = 10
-					Prompt.HoldDuration = 1
-
-					Prompt.Triggered:Connect(function(Player: Player)
-						if Player == Owner then
-							_Crate:Destroy()
-						end
-					end)
+					self.Plots[Plot].CurrentCrate = _Crate :: Crate.Crate
 
 					_Crate.Destroying:Wait()
 				end

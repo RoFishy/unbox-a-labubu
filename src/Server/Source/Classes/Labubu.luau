@@ -14,13 +14,14 @@ local Types = require("@Shared/Types")
 local GetLabubuInfo = require("@Utility/GetLabubuInfo")
 local GetPlayerPlot = require("@Utility/GetPlayerPlot")
 local Log = require("@Utility/Log")
-local TweenModel = require("@Utility/TweenModel")
 
 local DataUtil = require("@ServerUtility/DataUtil")
 
 local SlotClass = require("@ServerClasses/Slot")
 
 local GetNextOpenSlot = require("@Utility/GetNextOpenSlot")
+
+local Remotes = require("@Shared/Remotes")
 
 -- // Init
 local Labubu = {}
@@ -131,7 +132,10 @@ function Labubu.Spawn(self: Labubu)
 
 	self.Model:PivotTo(CrateSpawn.CFrame * CFrame.new(0, -5, 0) * CFrame.Angles(0, math.rad(180), 0))
 
-	TweenModel.Position(self.Model, CrateSpawn.CFrame * CFrame.new(0, 2, 0), TweenInfo.new(1.5), function()
+	Remotes.TweenModelPosition:fireAll(self.Model, CrateSpawn.CFrame * CFrame.new(0, 2, 0), { 0.75 })
+
+	task.delay(0.8, function()
+		self.Model:PivotTo(CrateSpawn.CFrame * CFrame.new(0, 2, 0))
 		local Slots = Components:WaitForChild("Slots") :: Folder
 		local OpenSlotName = GetNextOpenSlot(Slots)
 
@@ -139,6 +143,30 @@ function Labubu.Spawn(self: Labubu)
 			local OpenSlot = Slots:WaitForChild(OpenSlotName)
 			local Stand = OpenSlot:WaitForChild("Stand") :: Part
 			self.Slot = OpenSlotName
+			task.wait(0.75)
+			Remotes.TweenModelPosition:fireAll(
+				self.Model,
+				Stand.CFrame * CFrame.new(0, 5, 0) * CFrame.Angles(0, math.rad(-90), 0),
+				{ 1.5 }
+			)
+			task.delay(1.6, function()
+				self.Model:PivotTo(Stand.CFrame * CFrame.new(0, 5, 0) * CFrame.Angles(0, math.rad(-90), 0))
+
+				self:AddToSlot()
+			end)
+		end
+	end)
+
+	--[[
+	TweenModel.Position(self.Model, CrateSpawn.CFrame * CFrame.new(0, 2, 0), TweenInfo.new(0.75), function()
+		local Slots = Components:WaitForChild("Slots") :: Folder
+		local OpenSlotName = GetNextOpenSlot(Slots)
+
+		if OpenSlotName then
+			local OpenSlot = Slots:WaitForChild(OpenSlotName)
+			local Stand = OpenSlot:WaitForChild("Stand") :: Part
+			self.Slot = OpenSlotName
+			task.wait(1.25)
 			TweenModel.Position(
 				self.Model,
 				Stand.CFrame * CFrame.new(0, 5, 0) * CFrame.Angles(0, math.rad(-90), 0),
@@ -149,6 +177,7 @@ function Labubu.Spawn(self: Labubu)
 			)
 		end
 	end)
+	]]
 end
 
 function Labubu.AddToSlot(self: Labubu)

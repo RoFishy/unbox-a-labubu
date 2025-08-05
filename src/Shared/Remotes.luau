@@ -16,6 +16,9 @@ type Remotes = Remo.Remotes<{
 	PurchaseCrate: Remo.ClientToServer<(string)>,
 
 	ClaimFreeReward: Remo.ClientToServer<>,
+
+	TweenModelScale: Remo.ServerToClient<(Instance, number, number, { any })>,
+	TweenModelPosition: Remo.ServerToClient<(Instance, CFrame, { any })>,
 }>
 
 local Remotes: Remotes = Remo.createRemotes({
@@ -33,6 +36,9 @@ local Remotes: Remotes = Remo.createRemotes({
 	PurchaseCrate = Remo.remote(t.string),
 
 	ClaimFreeReward = Remo.remote(),
+
+	TweenModelScale = Remo.remote(t.Instance, t.numberPositive, t.numberPositive, t.table),
+	TweenModelPosition = Remo.remote(t.Instance, t.CFrame, t.table),
 })
 
 return Remotes :: Remotes

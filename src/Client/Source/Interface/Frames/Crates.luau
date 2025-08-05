@@ -17,6 +17,8 @@ local InterfaceController = require("@Controllers/InterfaceController")
 
 local Time = require("@Utility/Time")
 
+local FormatNumber = require("@Utility/FormatNumber")
+
 local CrateData = require("@Config/Crates")
 
 local Remotes = require("@Shared/Remotes")
@@ -128,8 +130,8 @@ function Crates:UpdateShop()
 
 			local Data = CrateData[Name]
 			if Data then
-				Clone.price.Text = `${Data.Price}`
-				DropdownClone.Buy.name.Text = `${Data.Price}`
+				Clone.price.Text = `${FormatNumber.Comma(Data.Price)}`
+				DropdownClone.Buy.name.Text = `${FormatNumber.Comma(Data.Price)}`
 
 				Clone.LayoutOrder = Data.LayoutOrder
 				DropdownClone.LayoutOrder = Data.LayoutOrder + 1

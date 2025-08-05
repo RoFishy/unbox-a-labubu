@@ -14,7 +14,7 @@ local t = require("@Packages/t")
 local Remotes = require("@Shared/Remotes")
 
 local Log = require("@Utility/Log")
-local TweenModel = require("@Utility/TweenModel")
+--local TweenModel = require("@Utility/TweenModel")
 
 local GetRandomDictionaryIndex = require("@Utility/GetRandomDictionaryIndex")
 local GetRarity = require("@Utility/GetRarity")
@@ -204,15 +204,25 @@ function Crate.TakeDamage(self: Crate, Amount: number)
 			--EndScale = 0.85
 		end
 
-		local Info = TweenInfo.new(0.05, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+		local Info = { 0.05, Enum.EasingStyle.Sine, Enum.EasingDirection.Out } :: { any }
 
-		TweenModel.Scale(self.Model, 1, EndScale, Info, function()
-			TweenModel.Scale(self.Model, EndScale, 1, Info, function()
+		Remotes.TweenModelScale:fireAll(self.Model, 1, EndScale, Info)
+
+		task.delay(0.06, function()
+			self.Model:ScaleTo(EndScale)
+
+			Remotes.TweenModelScale:fireAll(self.Model, EndScale, 1, Info)
+
+			task.delay(0.06, function()
+				self.Model:ScaleTo(1)
+
 				-- kill myself if im at 0 health
 				if self.Config.Health <= 0 then
 					self:CleanupConnections()
 					task.wait(0.3)
-					TweenModel.Scale(self.Model, 1, 0.00001, TweenInfo.new(0.75), function()
+					Remotes.TweenModelScale:fireAll(self.Model, 1, 0.00001, { 0.4 })
+					task.delay(0.5, function()
+						self.Model:ScaleTo(0.00001)
 						local ChosenRarity: Types.Rarity = GetRarity(self.Config.Chances) :: Types.Rarity
 						if ChosenRarity then
 							local SubDictionary = LabubuConfig[ChosenRarity]
@@ -230,7 +240,7 @@ function Crate.TakeDamage(self: Crate, Amount: number)
 									end)
 									_Labubu:Spawn()
 
-									task.delay(2.5, function()
+									task.delay(1.8, function()
 										self:Destroy()
 									end)
 
@@ -249,7 +259,7 @@ function Crate.TakeDamage(self: Crate, Amount: number)
 												DataUtil:SetData(self.Owner, PlayerData)
 											end
 
-											task.delay(1.4, function()
+											task.delay(1, function()
 												_Labubu.Model:Destroy()
 											end)
 
@@ -267,6 +277,69 @@ function Crate.TakeDamage(self: Crate, Amount: number)
 				end
 			end)
 		end)
+		--[[
+		TweenModel.Scale(self.Model, 1, EndScale, Info, function()
+			TweenModel.Scale(self.Model, EndScale, 1, Info, function()
+				-- kill myself if im at 0 health
+				if self.Config.Health <= 0 then
+					self:CleanupConnections()
+					task.wait(0.3)
+					TweenModel.Scale(self.Model, 1, 0.00001, TweenInfo.new(0.4), function()
+						local ChosenRarity: Types.Rarity = GetRarity(self.Config.Chances) :: Types.Rarity
+						if ChosenRarity then
+							local SubDictionary = LabubuConfig[ChosenRarity]
+
+							if SubDictionary then
+								local RandomLabubuName, _ = GetRandomDictionaryIndex(SubDictionary.Labubus)
+								if RandomLabubuName then
+									local _Labubu = Labubu.new(RandomLabubuName, self.Owner)
+									local BrokenSound = SoundService:WaitForChild("BrokenCrate"):Clone() :: Sound
+									BrokenSound.Parent = _Labubu.RootPart
+									BrokenSound:Play()
+
+									BrokenSound.Ended:Connect(function()
+										BrokenSound:Destroy()
+									end)
+									_Labubu:Spawn()
+
+									task.delay(1.5, function()
+										self:Destroy()
+									end)
+
+									local Base = GetPlayerPlot(self.Owner)
+									if Base then
+										local Slots = Base:WaitForChild("Components"):WaitForChild("Slots") :: Folder
+										local OpenSlot = GetNextOpenSlot(Slots)
+										if not OpenSlot then
+											local PlayerData = DataUtil:GetData(self.Owner)
+
+											if PlayerData then
+												PlayerData = table.clone(PlayerData)
+
+												table.insert(PlayerData.Backpack, RandomLabubuName)
+
+												DataUtil:SetData(self.Owner, PlayerData)
+											end
+
+											task.delay(1, function()
+												_Labubu.Model:Destroy()
+											end)
+
+											return Remotes.ShowNotification:fire(
+												self.Owner,
+												`The {RandomLabubuName} Labubu has been added to your backpack`,
+												Color3.fromRGB(0, 255, 0)
+											)
+										end
+									end
+								end
+							end
+						end
+					end)
+				end
+			end)
+		end)
+		]]
 	end
 end
 
@@ -326,6 +399,27 @@ function Crate.Spawn(self: Crate, Location: Vector3)
 
 	local Smoke = self.Model:FindFirstChild("Smoke") :: Part
 
+	Remotes.TweenModelPosition:fireAll(self.Model, EndPosition, { 1, Enum.EasingStyle.Exponential })
+	task.delay(1.1, function()
+		self.Model:PivotTo(EndPosition)
+		if Smoke then
+			local Attachment = Smoke:WaitForChild("Attachment") :: Attachment
+			for _, child in Attachment:GetChildren() do
+				if child:IsA("ParticleEmitter") then
+					child = child :: ParticleEmitter
+
+					child.Enabled = true
+
+					task.delay(0.5, function()
+						child.Enabled = false
+					end)
+				end
+			end
+		end
+
+		self:SetupConnections()
+	end)
+	--[[
 	TweenModel.Position(self.Model, EndPosition, TweenInfo.new(1, Enum.EasingStyle.Exponential), function()
 		if Smoke then
 			local Attachment = Smoke:WaitForChild("Attachment") :: Attachment
@@ -344,6 +438,7 @@ function Crate.Spawn(self: Crate, Location: Vector3)
 
 		self:SetupConnections()
 	end)
+	]]
 
 	--[[
 	task.delay(1, function()

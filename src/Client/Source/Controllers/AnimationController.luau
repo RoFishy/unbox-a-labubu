@@ -18,6 +18,9 @@ function AnimationController:Start()
 			local Animator: Animator = Character.Humanoid.Animator
 
 			local LoadedAnimation = Animator:LoadAnimation(Animation)
+			if string.find(Animation.Name, "Swing") then
+				LoadedAnimation:AdjustSpeed(2)
+			end
 			LoadedAnimation:Play()
 		end
 	end)
