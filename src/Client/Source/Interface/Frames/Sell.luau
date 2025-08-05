@@ -1,5 +1,6 @@
 -- // Services
 local Players = game:GetService("Players")
+local SoundService = game:GetService("SoundService")
 
 -- // plr
 local LocalPlayer = Players.LocalPlayer
@@ -10,6 +11,9 @@ local Replica = require("@Packages/Replica") :: any
 
 -- // Util
 local Button = require("@ClientUtility/Button")
+
+-- // sound
+local SellSound = SoundService:WaitForChild("Sell")
 
 -- // Module
 local InterfaceController = require("@Controllers/InterfaceController")
@@ -71,7 +75,10 @@ function Sell:Start()
 	table.insert(
 		self.Junk,
 		Button(SellAllButton, function()
-			Remotes.SellAllLabubus:fire()
+			if #PlayerBackpack > 0 then
+				Remotes.SellAllLabubus:fire()
+				SoundService:PlayLocalSound(SellSound)
+			end
 		end)
 	)
 end
@@ -136,6 +143,7 @@ function Sell:Update()
 
 				Button(Clone.Sell, function()
 					Remotes.SellLabubu:fire(Item)
+					SoundService:PlayLocalSound(SellSound)
 				end)
 			end
 		end

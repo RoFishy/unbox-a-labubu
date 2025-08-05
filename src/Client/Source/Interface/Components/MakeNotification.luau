@@ -15,9 +15,11 @@ local NotificationHolder = MiscUI:WaitForChild("NotificationHolder") :: Frame
 local NotificationTemplate = NotificationHolder:WaitForChild("NotificationTemplate") :: TextLabel
 
 return function(Text: string, Color: Color3?, Sound: string?)
-	Sound = SoundService:FindFirstChild(Sound)
 	if Sound then
-		SoundService:PlayLocalSound(Sound)
+		Sound = SoundService:FindFirstChild(Sound)
+		if Sound then
+			SoundService:PlayLocalSound(Sound)
+		end
 	end
 
 	for _, Notification in NotificationHolder:GetChildren() do

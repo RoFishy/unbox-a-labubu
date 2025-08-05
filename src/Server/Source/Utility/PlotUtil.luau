@@ -8,6 +8,8 @@ local Crate = require("@ServerClasses/Crate")
 
 local DataUtil = require("@ServerUtility/DataUtil")
 
+local Cache = require("@ServerUtility/Cache")
+
 local GetRarity = require("@Utility/GetRarity")
 
 local CrateConfig = require("@Config/Crates")
@@ -110,8 +112,26 @@ function PlotUtil.SetupSpawner(self: PlotUtil, Plot: string)
 
 					local ChosenCrate = RandomCrate or "Crate"
 
+					if Cache.PlayerCrates[Owner] and #Cache.PlayerCrates[Owner] > 0 then
+						ChosenCrate = Cache.PlayerCrates[Owner][1]
+						table.remove(Cache.PlayerCrates[Owner], 1)
+					end
+
 					local _Crate = Crate.new(ChosenCrate, PlotModel.Components.CrateSpawn.Position, Owner)
 					self.Plots[Plot].CurrentCrate = _Crate
+
+					local Prompt = Instance.new("ProximityPrompt")
+					Prompt.Parent = _Crate.Primary
+					Prompt.RequiresLineOfSight = false
+					Prompt.MaxActivationDistance = 10
+					Prompt.HoldDuration = 1
+
+					Prompt.Triggered:Connect(function(Player: Player)
+						if Player == Owner then
+							_Crate:Destroy()
+						end
+					end)
+
 					_Crate.Destroying:Wait()
 				end
 			end)

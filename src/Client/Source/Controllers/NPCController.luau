@@ -48,7 +48,7 @@ function NPCController:Start()
 	local CrateNPC
 	CrateNPC = NPC.new(CrateNPCCharacter, {
 		[1] = {
-			Option = "Open Upgrades Menu",
+			Option = "Open Crates Menu",
 			Callback = function()
 				CrateNPC:Say("Computing!")
 				InterfaceController:OpenFrame("Crates")

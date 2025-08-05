@@ -8,6 +8,8 @@ local PlotUtil = require("@ServerUtility/PlotUtil")
 local HammerTool = require("@ServerClasses/HammerTool")
 local Labubu = require("@ServerClasses/Labubu")
 
+local CrateShopService = require("@Services/CrateShopService")
+
 local Replica = require("@Packages/Replica") :: any
 
 -- // Init
@@ -53,6 +55,7 @@ function PlayerService:Start()
 	end)
 
 	Replica.NewReadyPlayer:Connect(function(Player: Player)
+		CrateShopService:SetPlayerInfo(Player)
 		DataUtil:SetupReplica(Player)
 	end)
 

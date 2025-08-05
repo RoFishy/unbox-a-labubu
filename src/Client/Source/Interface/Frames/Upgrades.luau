@@ -1,5 +1,6 @@
 -- // Services
 local Players = game:GetService("Players")
+local SoundService = game:GetService("SoundService")
 
 -- // Player
 local LocalPlayer = Players.LocalPlayer
@@ -17,6 +18,8 @@ local ToolData = require("@Config/Tools")
 local UpgradeData = require("@Config/Upgrades")
 
 local Remotes = require("@Shared/Remotes")
+
+local FormatNumber = require("@Utility/FormatNumber")
 
 -- // Packages
 local Replica = require("@Packages/Replica") :: any
@@ -42,6 +45,7 @@ local MainFrame = UpgradesFrame:WaitForChild("Main") :: Frame & { UpgradeFrame }
 
 -- // var
 local PlayerUpgradeData = {}
+local InUpgrade = false
 
 -- // Init
 local Upgrades = {}
@@ -54,6 +58,12 @@ function Upgrades.Init()
 			if new_value == PlayerUpgradeData then
 				return
 			end
+
+			if InUpgrade then
+				local Sound = SoundService:WaitForChild("CashCollect") :: Sound
+				SoundService:PlayLocalSound(Sound)
+			end
+
 			PlayerUpgradeData = new_value
 			Upgrades:Update()
 		end)
@@ -84,6 +94,10 @@ function Upgrades:SetupButtonConnections()
 					end
 
 					Remotes.PurchaseUpgrade:fire(Frame.Name)
+					InUpgrade = true
+					task.delay(0.5, function()
+						InUpgrade = false
+					end)
 				end)
 			)
 		end
@@ -132,7 +146,7 @@ function Upgrades:Update()
 						end
 					end
 
-					Frame.Sell.name.Text = "$" .. tostring(NextValue.Price)
+					Frame.Sell.name.Text = "$" .. FormatNumber.Comma(NextValue.Price)
 					Frame.level.Text = "LEVEL " .. tostring(NewValue)
 				else
 					Frame.level.Text = "LEVEL " .. tostring(NewValue)

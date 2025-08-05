@@ -5,19 +5,19 @@ return {
 		Labubus = {
 			["Lychee Berry"] = {
 				Income = 1,
-				SellPrice = 1,
+				SellPrice = 5,
 			},
 			["Soy Milk"] = {
-				Income = 1,
-				SellPrice = 1,
+				Income = 2,
+				SellPrice = 10,
 			},
 			["Noob"] = {
-				Income = 1,
-				SellPrice = 1,
+				Income = 3,
+				SellPrice = 15,
 			},
 			["Sesame Bean"] = {
-				Income = 1,
-				SellPrice = 1,
+				Income = 4,
+				SellPrice = 20,
 			},
 		},
 	},
@@ -25,88 +25,88 @@ return {
 		Labubus = {
 
 			["Chef"] = {
-				Income = 1,
-				SellPrice = 1,
+				Income = 5,
+				SellPrice = 30,
 			},
 			["Toffee Candy"] = {
-				Income = 1,
-				SellPrice = 1,
+				Income = 7,
+				SellPrice = 50,
 			},
 			["Chill"] = {
-				Income = 1,
-				SellPrice = 1,
+				Income = 10,
+				SellPrice = 80,
 			},
 		},
 	},
 	["Rare"] = {
 		Labubus = {
 			["Astronaut"] = {
-				Income = 1,
-				SellPrice = 1,
+				Income = 15,
+				SellPrice = 130,
 			},
 			["Love"] = {
-				Income = 1,
-				SellPrice = 1,
+				Income = 25,
+				SellPrice = 250,
 			},
 			["Sea Salt Coconut"] = {
-				Income = 1,
-				SellPrice = 1,
+				Income = 35,
+				SellPrice = 500,
 			},
 		},
 	},
 	["Epic"] = {
 		Labubus = {
 			["Green Grape"] = {
-				Income = 1,
-				SellPrice = 1,
+				Income = 50,
+				SellPrice = 650,
 			},
 			["Ninja"] = {
-				Income = 1,
-				SellPrice = 1,
+				Income = 75,
+				SellPrice = 900,
 			},
 			["Chestnut Cocoa"] = {
-				Income = 1,
-				SellPrice = 1,
+				Income = 100,
+				SellPrice = 1200,
 			},
 		},
 	},
 	["Legendary"] = {
 		Labubus = {
 			["Viking"] = {
-				Income = 1,
-				SellPrice = 1,
+				Income = 125,
+				SellPrice = 1750,
 			},
 			["Beach"] = {
-				Income = 1,
-				SellPrice = 1,
+				Income = 150,
+				SellPrice = 2250,
 			},
 			["Squid"] = {
-				Income = 1,
-				SellPrice = 1,
+				Income = 200,
+				SellPrice = 3000,
 			},
 		},
 	},
 	["Divine"] = {
 		Labubus = {
 			["Angel"] = {
-				Income = 1,
-				SellPrice = 1,
+				Income = 300,
+				SellPrice = 5000,
 			},
 			["Loyalty"] = {
-				Income = 1,
-				SellPrice = 1,
+				Income = 450,
+				SellPrice = 8000,
 			},
 		},
 	},
 	["Secret"] = {
 		Labubus = {
 			["King"] = {
-				Income = 1,
-				SellPrice = 1,
+				Income = 750,
+				SellPrice = 15000,
 			},
 			["Secret Labubu"] = {
-				Income = 1,
-				SellPrice = 1,
+				Income = 1500,
+				SellPrice = 40000,
 			},
 		},
 	},

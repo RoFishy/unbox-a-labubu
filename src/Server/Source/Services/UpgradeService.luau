@@ -41,6 +41,12 @@ function UpgradeService:Start()
 
 							if CurrentTool then
 								CurrentTool:Destroy()
+							else
+								local Character = Player.Character or Player.CharacterAdded:Wait()
+								CurrentTool = Character:FindFirstChild(tostring(CurrentUpgrade))
+								if CurrentTool then
+									CurrentTool:Destroy()
+								end
 							end
 
 							HammerTool.new(Player)

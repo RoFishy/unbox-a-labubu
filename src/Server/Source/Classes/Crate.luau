@@ -1,12 +1,10 @@
 -- // Services
-local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local SoundService = game:GetService("SoundService")
 
 -- // Obj
 local CratesFolder: Folder = ReplicatedStorage.Crates
-local PlotsFolder = workspace.Plots
 
 -- // packages
 local Signal = require("@Packages/Signal")
@@ -21,6 +19,8 @@ local TweenModel = require("@Utility/TweenModel")
 local GetRandomDictionaryIndex = require("@Utility/GetRandomDictionaryIndex")
 local GetRarity = require("@Utility/GetRarity")
 
+local DataUtil = require("@ServerUtility/DataUtil")
+
 local Types = require("@Shared/Types")
 
 local Spring = require("@Utility/Spring")
@@ -30,6 +30,9 @@ local LabubuConfig = require("@Config/Labubus")
 local ToolConfig = require("@Config/Tools")
 
 local Labubu = require("@ServerClasses/Labubu")
+
+local GetNextOpenSlot = require("@Utility/GetNextOpenSlot")
+local GetPlayerPlot = require("@Utility/GetPlayerPlot")
 
 -- // Const
 local SCALE_VALUES = {
@@ -46,30 +49,6 @@ local SCALE_VALUES = {
 		[4] = 0.95,
 	},
 }
-
--- // local functions
-local function GetPlayerPlot(Player: Player): Instance?
-	for _, Plot in PlotsFolder:GetChildren() do
-		if Plot:GetAttribute("Owner") and Plot:GetAttribute("Owner") == Player.Name then
-			return Plot
-		end
-	end
-
-	return
-end
-
-local function GetNextOpenSlot(Slots: Folder): string?
-	for i = 1, #Slots:GetChildren() do
-		local CurrentSlot = Slots:FindFirstChild("Slot" .. i)
-		if CurrentSlot then
-			if CurrentSlot:GetAttribute("Labubu") == nil then
-				return CurrentSlot.Name
-			end
-		end
-	end
-
-	return
-end
 
 -- // Init
 local Crate = {}
@@ -127,7 +106,6 @@ end
 
 function Crate.Init(self: Crate, SpawnLocation: Vector3)
 	self:Spawn(SpawnLocation)
-	self:SetupConnections()
 	self:SetupAttachment()
 end
 
@@ -195,15 +173,17 @@ function Crate.TakeDamage(self: Crate, Amount: number)
 	do
 		local HitEffect = self.Model:FindFirstChild("HitEffect") :: Part
 		if HitEffect then
-			local Attachment = HitEffect:WaitForChild("Attachment")
-			for _, child in Attachment:GetChildren() do
-				if child:IsA("ParticleEmitter") then
-					child = child :: ParticleEmitter
-					child.Enabled = true
+			local Attachment = HitEffect:FindFirstChildOfClass("Attachment")
+			if Attachment then
+				for _, child in Attachment:GetChildren() do
+					if child:IsA("ParticleEmitter") then
+						child = child :: ParticleEmitter
+						child.Enabled = true
 
-					task.delay(0.25, function()
-						child.Enabled = false
-					end)
+						task.delay(0.25, function()
+							child.Enabled = false
+						end)
+					end
 				end
 			end
 		end
@@ -231,6 +211,7 @@ function Crate.TakeDamage(self: Crate, Amount: number)
 				-- kill myself if im at 0 health
 				if self.Config.Health <= 0 then
 					self:CleanupConnections()
+					task.wait(0.3)
 					TweenModel.Scale(self.Model, 1, 0.00001, TweenInfo.new(0.75), function()
 						local ChosenRarity: Types.Rarity = GetRarity(self.Config.Chances) :: Types.Rarity
 						if ChosenRarity then
@@ -252,6 +233,33 @@ function Crate.TakeDamage(self: Crate, Amount: number)
 									task.delay(2.5, function()
 										self:Destroy()
 									end)
+
+									local Base = GetPlayerPlot(self.Owner)
+									if Base then
+										local Slots = Base:WaitForChild("Components"):WaitForChild("Slots") :: Folder
+										local OpenSlot = GetNextOpenSlot(Slots)
+										if not OpenSlot then
+											local PlayerData = DataUtil:GetData(self.Owner)
+
+											if PlayerData then
+												PlayerData = table.clone(PlayerData)
+
+												table.insert(PlayerData.Backpack, RandomLabubuName)
+
+												DataUtil:SetData(self.Owner, PlayerData)
+											end
+
+											task.delay(1.4, function()
+												_Labubu.Model:Destroy()
+											end)
+
+											return Remotes.ShowNotification:fire(
+												self.Owner,
+												`The {RandomLabubuName} Labubu has been added to your backpack`,
+												Color3.fromRGB(0, 255, 0)
+											)
+										end
+									end
 								end
 							end
 						end
@@ -275,6 +283,7 @@ function Crate.SetupConnections(self: Crate)
 						if Tool:GetAttribute("Attacking") then
 							Tool:SetAttribute("Attacking", nil)
 
+							--[[
 							local Player = Players:GetPlayerFromCharacter(Character)
 							if Player then
 								local Base = GetPlayerPlot(Player)
@@ -291,6 +300,7 @@ function Crate.SetupConnections(self: Crate)
 									end
 								end
 							end
+							]]
 							-- get the configuration for the tools
 
 							local Name = tonumber(Tool.Name)
@@ -331,6 +341,8 @@ function Crate.Spawn(self: Crate, Location: Vector3)
 				end
 			end
 		end
+
+		self:SetupConnections()
 	end)
 
 	--[[

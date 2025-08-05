@@ -18,6 +18,7 @@ local Backpack = require("@Interface/Components/Backpack")
 local Hud = require("@Interface/Components/Hud")
 local MakeNotification = require("@Interface/Components/MakeNotification")
 local NPCDialogue = require("@Interface/Components/NPCDialogue")
+local StrokeHandler = require("@Interface/Components/StrokeHandler")
 
 local Signals = require("@ClientUtility/Signals")
 
@@ -65,6 +66,7 @@ function InterfaceController:Start()
 	})
 	Backpack()
 	NPCDialogue()
+	StrokeHandler()
 
 	Remotes.ShowNotification:connect(MakeNotification)
 end

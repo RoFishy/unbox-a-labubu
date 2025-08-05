@@ -3,6 +3,17 @@ export type CrateConfig = {
 
 	SpawnChance: number,
 
+	RestockChance: number,
+	RestockMin: number,
+	RestockMax: number,
+
+	Product: number,
+	Price: number,
+
+	Image: string,
+
+	LayoutOrder: number,
+
 	Chances: { [Rarity]: number },
 }
 
@@ -36,6 +47,8 @@ export type UserData = {
 	Index: { string },
 
 	ExtraSlots: { number },
+
+	ClaimedFreeReward: boolean,
 }
 
 export type UpgradeInfo<T> = {

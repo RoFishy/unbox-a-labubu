@@ -5,6 +5,8 @@ local TweenService = game:GetService("TweenService")
 -- // pkg
 local Replica = require("@Packages/Replica") :: any
 
+local FormatNumber = require("@Utility/FormatNumber")
+
 -- // Player
 local LocalPlayer = Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
@@ -15,20 +17,6 @@ local Hud = MainUI:WaitForChild("Hud") :: Frame
 
 local CashLabel = Hud:WaitForChild("cash") :: TextLabel
 local Scale = CashLabel:WaitForChild("UIScale") :: UIScale
-
--- // Local Functions
-local function FormatCash(Amount: number): any
-	local formatted = Amount :: any
-	while true do
-		local k
-		formatted, k = string.gsub(formatted, "^(-?%d+)(%d%d%d)", "%1,%2")
-		if k == 0 then
-			break
-		end
-	end
-	return formatted
-end
-
 -- // init
 local currentCash: number = 0
 
@@ -58,7 +46,7 @@ return function()
 				local a = TweenService:GetValue(i, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
 				local tweenInt = math.round(currentCash * (1 - a) + new_value * a)
 
-				CashLabel.Text = "$" .. FormatCash(tweenInt)
+				CashLabel.Text = "$" .. FormatNumber.Comma(tweenInt)
 				task.wait(0.05)
 			end
 

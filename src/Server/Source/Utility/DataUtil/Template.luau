@@ -15,4 +15,6 @@ return {
 	Index = {},
 
 	ExtraSlots = {},
+
+	ClaimedFreeReward = false,
 } :: Types.UserData

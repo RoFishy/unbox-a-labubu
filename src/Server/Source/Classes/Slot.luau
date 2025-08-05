@@ -9,6 +9,8 @@ local Types = require("@Shared/Types")
 
 local GetPlayerPlot = require("@Utility/GetPlayerPlot")
 
+local FormatNumber = require("@Utility/FormatNumber")
+
 local DataUtil = require("@ServerUtility/DataUtil")
 
 -- // Functions
@@ -132,7 +134,8 @@ function Slot.Setup(self: Slot)
 
 				self.CurrentEarned += self.Config.Income * CashMultiplier
 
-				self.SlotModel.Collect.Attachment.Billboard.Frame.amount.Text = `${self.CurrentEarned}`
+				self.SlotModel.Collect.Attachment.Billboard.Frame.amount.Text =
+					`${FormatNumber.Suffix(self.CurrentEarned)}`
 			end
 		end)
 	)
@@ -171,7 +174,8 @@ function Slot.Setup(self: Slot)
 
 					self.CurrentEarned = 0
 
-					self.SlotModel.Collect.Attachment.Billboard.Frame.amount.Text = `${self.CurrentEarned}`
+					self.SlotModel.Collect.Attachment.Billboard.Frame.amount.Text =
+						`${FormatNumber.Suffix(self.CurrentEarned)}`
 				end
 			end
 		end)
