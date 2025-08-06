@@ -1,5 +1,7 @@
 -- // Services
+local MarketplaceService = game:GetService("MarketplaceService")
 local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local SocialService = game:GetService("SocialService")
 
 -- // Player
@@ -12,6 +14,14 @@ local Button = require("@ClientUtility/Button")
 local GetPlayerPlot = require("@Utility/GetPlayerPlot")
 
 local CashLabel = require("@Interface/Components/CashLabel")
+
+local TimeUtils = require("@Utility/Time")
+
+local Passes = require("@Config/Passes")
+
+-- // luck
+local CurrentLuck = ReplicatedStorage:WaitForChild("Luck"):WaitForChild("LuckAmount") :: IntValue
+local LuckTime = ReplicatedStorage:WaitForChild("Luck"):WaitForChild("LuckTime") :: IntValue
 
 -- // obj
 local Teleports = workspace.Teleports :: Folder & { Part }
@@ -27,11 +37,22 @@ local TopButtons = Hud:WaitForChild("Top") :: Frame
 
 local StarterPack = Hud:WaitForChild("StarterPack") :: TextButton
 
+local ServerluckLabel = Hud:WaitForChild("ServerLuck") :: TextLabel
+
 -- // Start
 return function(props: {
 	OpenFrame: (FrameName: string) -> (),
 })
 	CashLabel()
+
+	LuckTime:GetPropertyChangedSignal("Value"):Connect(function()
+		if LuckTime.Value > 0 then
+			ServerluckLabel.Visible = true
+			ServerluckLabel.Text = `{CurrentLuck.Value}x Server Luck: {TimeUtils.FormatMS(LuckTime.Value)}`
+		else
+			ServerluckLabel.Visible = false
+		end
+	end)
 
 	for _, Instance in LeftButtons:GetChildren() do
 		if Instance:IsA("TextButton") or Instance:IsA("ImageButton") then
@@ -85,5 +106,20 @@ return function(props: {
 		end
 	end
 
-	Button(StarterPack)
+	if not MarketplaceService:UserOwnsGamePassAsync(LocalPlayer.UserId, Passes["Starter Pack"]) then
+		local PackTimer = StarterPack:WaitForChild("Timer") :: TextLabel
+		task.spawn(function()
+			for i = 60 * 29, 0, -1 do
+				PackTimer.Text = TimeUtils.FormatMS(i)
+				task.wait(1)
+			end
+
+			StarterPack.Visible = false
+		end)
+		Button(StarterPack, function()
+			props.OpenFrame("Shop")
+		end)
+	else
+		StarterPack.Visible = false
+	end
 end

@@ -145,7 +145,7 @@ function Slot.Setup(self: Slot, OfflineEarnings: number?)
 				local PlayerData = DataUtil:GetData(self.Owner)
 				local CashMultiplier = 1
 				if PlayerData then
-					CashMultiplier = UpgradeConfig.Cash[PlayerData.Upgrades.Cash].NewValue
+					CashMultiplier = UpgradeConfig.Cash[PlayerData.Upgrades.Cash].NewValue + PlayerData.CashMulti
 				end
 
 				self.CurrentEarned += self.Config.Income * CashMultiplier

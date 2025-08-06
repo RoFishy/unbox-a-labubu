@@ -63,7 +63,7 @@ local OpenedCrateFrames = {}
 -- // local func
 local function GetPrice(ProductId: number): number?
 	local success, result = pcall(function()
-		return MarketplaceService:GetProductInfo(ProductId)
+		return MarketplaceService:GetProductInfo(ProductId, Enum.InfoType.Product)
 	end)
 
 	if success then

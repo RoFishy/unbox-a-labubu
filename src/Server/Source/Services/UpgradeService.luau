@@ -34,6 +34,7 @@ function UpgradeService:Start()
 						PlayerData.Cash -= NextUpgrade.Price
 
 						PlayerData.Upgrades[Name] += 1
+						DataUtil:SetData(Player, PlayerData)
 
 						if Name == "Tool" then
 							local Backpack = Player.Backpack
@@ -51,8 +52,6 @@ function UpgradeService:Start()
 
 							HammerTool.new(Player)
 						end
-
-						DataUtil:SetData(Player, PlayerData)
 					end
 				end
 			end

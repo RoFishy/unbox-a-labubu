@@ -1,3 +1,8 @@
+-- // Services
+local MarketplaceService = game:GetService("MarketplaceService")
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
 -- // Objects
 local Plots = workspace.Plots :: Folder
 
@@ -16,6 +21,11 @@ local UpgradeConfig = require("@Config/Upgrades")
 
 local Remotes = require("@Shared/Remotes")
 
+local Passes = require("@Config/Passes")
+
+-- // Luck
+local CurrentLuck = ReplicatedStorage:WaitForChild("Luck"):WaitForChild("LuckAmount") :: IntValue
+
 type PlotUtil = {
 	Plots: { [string]: Types.PlotData },
 
@@ -27,6 +37,7 @@ type PlotUtil = {
 	TeleportPlayerToPlot: (self: PlotUtil, Player: Player, Plot: string?) -> (),
 	SetupSpawner: (self: PlotUtil, Plot: string) -> (),
 	SetupSkipPrompt: (self: PlotUtil, Plot: string) -> (),
+	SetupGamepasses: (self: PlotUtil, Plot: string) -> (),
 }
 type SlotModel = Folder & {
 	Stand: Part,
@@ -49,6 +60,10 @@ type SlotModel = Folder & {
 	},
 }
 
+type GamepassButton = Model & {
+	Stand: Part,
+}
+
 type PlotModel = Model & {
 	Components: Folder & {
 		Teleport: Part,
@@ -60,6 +75,12 @@ type PlotModel = Model & {
 				ProximityPrompt: ProximityPrompt,
 			},
 		},
+	},
+	Gamepasses: Folder & {
+		["2Slots"]: GamepassButton,
+		x2Cash: GamepassButton,
+		Banhammer: GamepassButton,
+		x2Luck: GamepassButton,
 	},
 }
 
@@ -75,7 +96,40 @@ function PlotUtil.Setup(self: PlotUtil)
 		}
 		self:ResetPlot(PlotModel.Name)
 		self:SetupSkipPrompt(PlotModel.Name)
+		self:SetupGamepasses(PlotModel.Name)
 	end
+end
+
+function PlotUtil.SetupGamepasses(_: PlotUtil, Plot: string)
+	local PlotModel = Plots:FindFirstChild(Plot) :: PlotModel
+
+	PlotModel.Gamepasses["2Slots"].Stand.Touched:Connect(function(Hit)
+		local Player = Players:GetPlayerFromCharacter(Hit.Parent)
+		if Player then
+			MarketplaceService:PromptGamePassPurchase(Player, Passes["+2 Slots"])
+		end
+	end)
+
+	PlotModel.Gamepasses.x2Cash.Stand.Touched:Connect(function(Hit)
+		local Player = Players:GetPlayerFromCharacter(Hit.Parent)
+		if Player then
+			MarketplaceService:PromptGamePassPurchase(Player, Passes["x2 Cash"])
+		end
+	end)
+
+	PlotModel.Gamepasses.Banhammer.Stand.Touched:Connect(function(Hit)
+		local Player = Players:GetPlayerFromCharacter(Hit.Parent)
+		if Player then
+			MarketplaceService:PromptGamePassPurchase(Player, Passes["Banhammer"])
+		end
+	end)
+
+	PlotModel.Gamepasses.x2Luck.Stand.Touched:Connect(function(Hit)
+		local Player = Players:GetPlayerFromCharacter(Hit.Parent)
+		if Player then
+			MarketplaceService:PromptGamePassPurchase(Player, Passes["x2 Luck"])
+		end
+	end)
 end
 
 function PlotUtil.SetupSkipPrompt(self: PlotUtil, Plot: string)
@@ -135,6 +189,8 @@ function PlotUtil.SetupSpawner(self: PlotUtil, Plot: string)
 					local Luck = 1
 					if PlayerData then
 						Luck = UpgradeConfig.Luck[PlayerData.Upgrades.Luck].NewValue
+							+ PlayerData.Luck
+							+ CurrentLuck.Value
 					end
 					local RandomCrate = GetRarity(CrateConfig, function(CrateName)
 						if CrateConfig[CrateName].SpawnChance < 3 then

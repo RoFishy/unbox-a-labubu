@@ -36,6 +36,7 @@ export type NPCDialogueOptions = {
 export type UserData = {
 	Cash: number,
 	LastJoin: number?,
+	Unboxes: number,
 
 	Upgrades: {
 		Cash: number,
@@ -63,6 +64,9 @@ export type UserData = {
 	ExtraSlots: { number },
 
 	ClaimedFreeReward: boolean,
+
+	ForeverPack: {},
+	LastForeverPackReset: number,
 }
 
 export type UpgradeInfo<T> = {

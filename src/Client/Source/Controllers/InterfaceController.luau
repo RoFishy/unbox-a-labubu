@@ -26,6 +26,9 @@ local Signals = require("@ClientUtility/Signals")
 local MainUI = PlayerGui:WaitForChild("UI") :: ScreenGui
 local Frames = MainUI:WaitForChild("Frames") :: Frame & { Frame }
 
+-- // obj
+local GroupChest = workspace:WaitForChild("GroupChest")
+
 -- // local functions
 local coreCall
 do
@@ -69,6 +72,14 @@ function InterfaceController:Start()
 	StrokeHandler()
 
 	Remotes.ShowNotification:connect(MakeNotification)
+
+	local GroupChestPrompt = GroupChest:WaitForChild("RewardPart")
+		:WaitForChild("Attachment")
+		:WaitForChild("ProximityPrompt") :: ProximityPrompt
+
+	GroupChestPrompt.Triggered:Connect(function()
+		self:OpenFrame("Free")
+	end)
 end
 
 function InterfaceController:OpenFrame(FrameName: string)

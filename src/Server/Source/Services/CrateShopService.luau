@@ -61,7 +61,7 @@ function CrateShopService:Start()
 	end)
 
 	Remotes.PurchaseCrate:connect(function(Player: Player, CrateName: string)
-		local PlayerStock = PlayerStockData[Player]
+		local PlayerStock: any = PlayerStockData[Player]
 		if not PlayerStock then
 			return
 		end

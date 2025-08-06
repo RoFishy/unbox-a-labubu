@@ -20,6 +20,8 @@ type Remotes = Remo.Remotes<{
 	TweenModelPosition: Remo.ServerToClient<(Instance, CFrame, { any })>,
 
 	SetupPlotDisplay: Remo.ServerToClient<(string)>,
+
+	ClaimForeverPack: Remo.ServerAsync<(), ({ any }?)>,
 }>
 
 local Remotes: Remotes = Remo.createRemotes({
@@ -41,6 +43,8 @@ local Remotes: Remotes = Remo.createRemotes({
 	TweenModelPosition = Remo.remote(t.Instance, t.CFrame, t.table),
 
 	SetupPlotDisplay = Remo.remote(t.string),
+
+	ClaimForeverPack = Remo.remote().returns(t.optional(t.table)),
 })
 
 return Remotes :: Remotes

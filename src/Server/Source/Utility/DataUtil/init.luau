@@ -1,4 +1,5 @@
 -- // Services
+local DataStoreService = game:GetService("DataStoreService")
 local Players = game:GetService("Players")
 
 -- // Packages
@@ -13,6 +14,10 @@ local GetPlayerPlot = require("@Utility/GetPlayerPlot")
 local GetLabubuInfo = require("@Utility/GetLabubuInfo")
 
 local Replica = require("@Packages/Replica")
+
+-- // ordered DS
+local UnboxesOrderedDS = DataStoreService:GetOrderedDataStore("OrderedUnboxes")
+local CashOrderedDS = DataStoreService:GetOrderedDataStore("OrderedCash")
 
 -- // Store
 local PlayerStore = ProfileStore.New("PlayerStore", DataTemplate)
@@ -79,10 +84,6 @@ function DataUtil:InitializePlayer(Player: Player)
 			end
 		end
 	end)
-
-	task.delay(5, function()
-		self:SaveBaseData(Player)
-	end)
 end
 
 function DataUtil:_SetupLeaderstats(Player: Player)
@@ -94,9 +95,14 @@ function DataUtil:_SetupLeaderstats(Player: Player)
 	Cash.Name = "Cash"
 	Cash.Parent = leaderstats
 
+	local Unboxes = Instance.new("IntValue")
+	Unboxes.Name = "Unboxes"
+	Unboxes.Parent = leaderstats
+
 	local Data = self:GetData(Player)
 	if Data then
 		Cash.Value = Data.Cash
+		Unboxes.Value = Data.Unboxes
 	end
 end
 
@@ -134,6 +140,8 @@ function DataUtil:SetReplica(Player: Player, Data: Types.UserData)
 		_replica:Set({ "Backpack" }, Data.Backpack)
 		_replica:Set({ "Cash" }, Data.Cash)
 		_replica:Set({ "Upgrades" }, Data.Upgrades)
+		_replica:Set({ "ForeverPack" }, Data.ForeverPack)
+		_replica:Set({ "LastForeverPackRest" }, Data.LastForeverPackReset)
 	end
 end
 
@@ -141,10 +149,12 @@ function DataUtil:_UpdateLeaderstats(Player: Player)
 	local leaderstats = Player:FindFirstChild("leaderstats")
 	if leaderstats then
 		local Cash = leaderstats:FindFirstChild("Cash") :: IntValue
-		if Cash then
+		local Unboxes = leaderstats:FindFirstChild("Unboxes") :: IntValue
+		if Cash and Unboxes then
 			local Data = self:GetData(Player)
 			if Data then
 				Cash.Value = Data.Cash
+				Unboxes.Value = Data.Unboxes
 			end
 		end
 	end
@@ -210,9 +220,15 @@ end
 function DataUtil:CleanupProfile(Player: Player)
 	self:SaveBaseData(Player)
 
-	if self.Profiles[Player] then
-		self.Profiles[Player].Data.LastJoin = tick()
-		self.Profiles[Player]:EndSession()
+	local Profile = self.Profiles[Player]
+	if Profile then
+		task.spawn(function()
+			CashOrderedDS:SetAsync(Player.UserId, math.floor(Profile.Data.Cash))
+			UnboxesOrderedDS:SetAsync(Player.UserId, Profile.Data.Unboxes)
+		end)
+
+		Profile.Data.LastJoin = tick()
+		Profile:EndSession()
 	end
 end
 

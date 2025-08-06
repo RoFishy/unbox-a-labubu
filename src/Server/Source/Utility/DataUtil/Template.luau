@@ -3,6 +3,7 @@ local Types = require("@Shared/Types")
 return {
 	Cash = 0,
 	LastJoin = nil,
+	Unboxes = 0,
 
 	Upgrades = {
 		Cash = 1,
@@ -32,4 +33,7 @@ return {
 	ExtraSlots = {},
 
 	ClaimedFreeReward = false,
+
+	ForeverPack = {},
+	LastForeverPackReset = 0,
 } :: Types.UserData

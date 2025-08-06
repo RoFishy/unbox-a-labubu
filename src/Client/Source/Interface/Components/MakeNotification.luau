@@ -17,7 +17,7 @@ local NotificationTemplate = NotificationHolder:WaitForChild("NotificationTempla
 return function(Text: string, Color: Color3?, Sound: string?)
 	if Sound then
 		Sound = SoundService:FindFirstChild(Sound)
-		if Sound then
+		if Sound and not LocalPlayer:GetAttribute("MuteSounds") then
 			SoundService:PlayLocalSound(Sound)
 		end
 	end

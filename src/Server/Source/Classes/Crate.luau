@@ -240,6 +240,13 @@ function Crate.TakeDamage(self: Crate, Amount: number)
 									end)
 									_Labubu:Spawn()
 
+									local PlayerData = DataUtil:GetData(self.Owner)
+									if PlayerData then
+										PlayerData = table.clone(PlayerData)
+
+										PlayerData.Unboxes += 1
+									end
+
 									task.delay(1.8, function()
 										self:Destroy()
 									end)
@@ -249,11 +256,7 @@ function Crate.TakeDamage(self: Crate, Amount: number)
 										local Slots = Base:WaitForChild("Components"):WaitForChild("Slots") :: Folder
 										local OpenSlot = GetNextOpenSlot(Slots)
 										if not OpenSlot then
-											local PlayerData = DataUtil:GetData(self.Owner)
-
 											if PlayerData then
-												PlayerData = table.clone(PlayerData)
-
 												table.insert(PlayerData.Backpack, RandomLabubuName)
 
 												DataUtil:SetData(self.Owner, PlayerData)

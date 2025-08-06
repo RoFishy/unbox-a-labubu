@@ -9,6 +9,8 @@ local HammerTool = require("@ServerClasses/HammerTool")
 local Labubu = require("@ServerClasses/Labubu")
 
 local CrateShopService = require("@Services/CrateShopService")
+local ForeverPackService = require("@Services/ForeverPackService")
+local PurchaseService = require("@Services/PurchaseService")
 
 local Replica = require("@Packages/Replica") :: any
 
@@ -19,8 +21,12 @@ local PlayerService = {
 
 function PlayerService:Start()
 	Players.PlayerAdded:Connect(function(Player: Player)
-		task.spawn(DataUtil.New, Player)
-		PlotUtil:AssignPlot(Player)
+		task.spawn(function()
+			DataUtil.New(Player)
+			PlotUtil:AssignPlot(Player)
+			PurchaseService:SetupPlayerGamepasses(Player)
+			ForeverPackService:SetupPlayer(Player)
+		end)
 
 		task.delay(1, function()
 			local Data = DataUtil:GetData(Player)
@@ -64,10 +70,12 @@ function PlayerService:Start()
 	Players.PlayerRemoving:Connect(function(Player: Player)
 		DataUtil:CleanupProfile(Player)
 
-		local Plot = PlotUtil:GetPlayerPlot(Player)
-		if Plot then
-			PlotUtil:ResetPlot(Plot)
-		end
+		task.delay(1, function()
+			local Plot = PlotUtil:GetPlayerPlot(Player)
+			if Plot then
+				PlotUtil:ResetPlot(Plot)
+			end
+		end)
 	end)
 end
 

@@ -1,6 +1,10 @@
 -- // Services
+local Players = game:GetService("Players")
 local SoundService = game:GetService("SoundService")
 local TweenService = game:GetService("TweenService")
+
+-- // plr
+local LocalPlayer = Players.LocalPlayer
 
 -- // Sounds
 local BtnClickSound = SoundService.BtnClick
@@ -37,7 +41,9 @@ local function ButtonHandler(Button: ImageButton | TextButton | Frame, Callback:
 	table.insert(
 		ButtonConnections,
 		Button.MouseEnter:Connect(function()
-			SoundService:PlayLocalSound(BtnHoverSound)
+			if not LocalPlayer:GetAttribute("MuteSounds") then
+				SoundService:PlayLocalSound(BtnHoverSound)
+			end
 			TweenService:Create(UIScale, TweenInfo.new(0.15), { Scale = MOUSE_HOVER_SCALE }):Play()
 		end)
 	)
@@ -50,7 +56,9 @@ local function ButtonHandler(Button: ImageButton | TextButton | Frame, Callback:
 	table.insert(
 		ButtonConnections,
 		Button.MouseButton1Down:Connect(function()
-			SoundService:PlayLocalSound(BtnClickSound)
+			if not LocalPlayer:GetAttribute("MuteSounds") then
+				SoundService:PlayLocalSound(BtnClickSound)
+			end
 			TweenService:Create(UIScale, TweenInfo.new(0.15), { Scale = MOUSE_DOWN_SCALE }):Play()
 		end)
 	)
