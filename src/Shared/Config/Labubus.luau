@@ -104,7 +104,7 @@ return {
 				Income = 750,
 				SellPrice = 15000,
 			},
-			["Secret Labubu"] = {
+			["Secret"] = {
 				Income = 1500,
 				SellPrice = 40000,
 			},

@@ -1,214 +1,225 @@
-local Types = require("@Shared/Types")
+local Types = require(script.Parent.Parent:WaitForChild("Types"))
 
 return {
 	["Wooden Crate"] = {
 		Health = 100,
 
-		SpawnChance = 10, -- chance of this crate spawning
+		SpawnChance = 30, -- chance of this crate spawning
 
-		RestockChance = 100, -- chance of this crate being restocked
+		RestockChance = 50, -- chance of this crate being restocked
 		RestockMin = 1, -- minimum amount of crates to restock
-		RestockMax = 7, -- maximum amount of crates to restock
+		RestockMax = 10, -- maximum amount of crates to restock
 
-		Product = 0, -- dev product
-		Price = 100, -- cash p rice
+		Product = 3359772575, -- dev product
+		Price = 50, -- cash p rice
 
-		Image = "",
+		Image = "rbxassetid://118635082887093",
 
 		LayoutOrder = 1,
 
 		Chances = {
 			["Common"] = 50, -- 50% chance
-			["Rare"] = 50, -- 50% chance
+			["Uncommon"] = 40, -- 40% chance
+			["Rare"] = 10, -- 10% chance
 		},
 	},
 	["Iron Crate"] = {
-		Health = 100,
+		Health = 200,
 
-		SpawnChance = 10, -- chance of this crate spawning
+		SpawnChance = 25, -- chance of this crate spawning
 
-		RestockChance = 100, -- chance of this crate being restocked
+		RestockChance = 35, -- chance of this crate being restocked
 		RestockMin = 1, -- minimum amount of crates to restock
-		RestockMax = 7, -- maximum amount of crates to restock
+		RestockMax = 8, -- maximum amount of crates to restock
 
-		Product = 0, -- dev product
-		Price = 100, -- cash p rice
+		Product = 3359774458, -- dev product
+		Price = 250, -- cash p rice
 
-		Image = "",
+		Image = "rbxassetid://84888084943105",
 
 		LayoutOrder = 3,
 
 		Chances = {
-			["Common"] = 50, -- 50% chance
-			["Rare"] = 50, -- 50% chance
+			["Common"] = 40, -- 40% chance
+			["Uncommon"] = 40, -- 40% chance
+			["Rare"] = 20, -- 20% chance
 		},
 	},
 	["Refined Crate"] = {
-		Health = 100,
+		Health = 400,
 
-		SpawnChance = 10, -- chance of this crate spawning
+		SpawnChance = 20, -- chance of this crate spawning
 
-		RestockChance = 100, -- chance of this crate being restocked
+		RestockChance = 25, -- chance of this crate being restocked
 		RestockMin = 1, -- minimum amount of crates to restock
 		RestockMax = 7, -- maximum amount of crates to restock
 
-		Product = 0, -- dev product
-		Price = 100, -- cash p rice
+		Product = 3359774865, -- dev product
+		Price = 750, -- cash p rice
 
-		Image = "",
+		Image = "rbxassetid://129584799233513",
 
 		LayoutOrder = 5,
 
 		Chances = {
-			["Common"] = 50, -- 50% chance
-			["Rare"] = 50, -- 50% chance
+			["Common"] = 30, -- 30% chance
+			["Uncommon"] = 40, -- 40% chance
+			["Rare"] = 30, -- 30% chance
 		},
 	},
 	["Arcane Crate"] = {
-		Health = 100,
+		Health = 1000,
 
-		SpawnChance = 10, -- chance of this crate spawning
+		SpawnChance = 15, -- chance of this crate spawning
 
-		RestockChance = 100, -- chance of this crate being restocked
+		RestockChance = 20, -- chance of this crate being restocked
 		RestockMin = 1, -- minimum amount of crates to restock
-		RestockMax = 7, -- maximum amount of crates to restock
+		RestockMax = 6, -- maximum amount of crates to restock
 
-		Product = 0, -- dev product
-		Price = 100, -- cash p rice
+		Product = 3359775299, -- dev product
+		Price = 3500, -- cash p rice
 
-		Image = "",
+		Image = "rbxassetid://104570030548954",
 
 		LayoutOrder = 7,
 
 		Chances = {
-			["Common"] = 50, -- 50% chance
-			["Rare"] = 50, -- 50% chance
+			["Rare"] = 60, -- 50% chance
+			["Epic"] = 35, -- 40% chance
+			["Legendary"] = 5, -- 10% chance
 		},
 	},
 	["Royal Crate"] = {
-		Health = 100,
+		Health = 2500,
 
 		SpawnChance = 10, -- chance of this crate spawning
 
-		RestockChance = 100, -- chance of this crate being restocked
+		RestockChance = 15, -- chance of this crate being restocked
 		RestockMin = 1, -- minimum amount of crates to restock
-		RestockMax = 7, -- maximum amount of crates to restock
+		RestockMax = 5, -- maximum amount of crates to restock
 
-		Product = 0, -- dev product
-		Price = 100, -- cash p rice
+		Product = 3359775390, -- dev product
+		Price = 20000, -- cash p rice
 
-		Image = "",
+		Image = "rbxassetid://70622623610806",
 
 		LayoutOrder = 9,
 
 		Chances = {
-			["Common"] = 50, -- 50% chance
-			["Rare"] = 50, -- 50% chance
+			["Rare"] = 40, -- 50% chance
+			["Epic"] = 50, -- 40% chance
+			["Legendary"] = 10, -- 10% chance
 		},
 	},
 	["Rune Crate"] = {
-		Health = 100,
+		Health = 5000,
 
-		SpawnChance = 10, -- chance of this crate spawning
+		SpawnChance = 5, -- chance of this crate spawning
 
-		RestockChance = 100, -- chance of this crate being restocked
+		RestockChance = 10, -- chance of this crate being restocked
 		RestockMin = 1, -- minimum amount of crates to restock
-		RestockMax = 7, -- maximum amount of crates to restock
+		RestockMax = 4, -- maximum amount of crates to restock
 
-		Product = 0, -- dev product
-		Price = 100, -- cash p rice
+		Product = 3359775809, -- dev product
+		Price = 70000, -- cash p rice
 
-		Image = "",
+		Image = "rbxassetid://113922224251608",
 
 		LayoutOrder = 11,
 
 		Chances = {
-			["Common"] = 50, -- 50% chance
-			["Rare"] = 50, -- 50% chance
+			["Epic"] = 60, -- 50% chance
+			["Legendary"] = 35, -- 40% chance
+			["Divine"] = 5, -- 10% chance
 		},
 	},
 	["Solar Crate"] = {
-		Health = 100,
+		Health = 10000,
 
-		SpawnChance = 10, -- chance of this crate spawning
+		SpawnChance = 3, -- chance of this crate spawning
 
-		RestockChance = 100, -- chance of this crate being restocked
+		RestockChance = 5, -- chance of this crate being restocked
 		RestockMin = 1, -- minimum amount of crates to restock
-		RestockMax = 7, -- maximum amount of crates to restock
+		RestockMax = 3, -- maximum amount of crates to restock
 
-		Product = 0, -- dev product
-		Price = 100, -- cash p rice
+		Product = 3359776256, -- dev product
+		Price = 150000, -- cash p rice
 
-		Image = "",
+		Image = "rbxassetid://117787260158263",
 
 		LayoutOrder = 13,
 
 		Chances = {
-			["Common"] = 50, -- 50% chance
-			["Rare"] = 50, -- 50% chance
+			["Epic"] = 40, -- 50% chance
+			["Legendary"] = 50, -- 40% chance
+			["Divine"] = 10, -- 10% chance
 		},
 	},
 	["Void Crate"] = {
-		Health = 100,
+		Health = 22500,
 
-		SpawnChance = 10, -- chance of this crate spawning
+		SpawnChance = 1, -- chance of this crate spawning
 
-		RestockChance = 100, -- chance of this crate being restocked
+		RestockChance = 3, -- chance of this crate being restocked
 		RestockMin = 1, -- minimum amount of crates to restock
-		RestockMax = 7, -- maximum amount of crates to restock
+		RestockMax = 2, -- maximum amount of crates to restock
 
-		Product = 0, -- dev product
-		Price = 100, -- cash p rice
+		Product = 3359776554, -- dev product
+		Price = 500000, -- cash p rice
 
-		Image = "",
+		Image = "rbxassetid://108271337314448",
 
 		LayoutOrder = 15,
 
 		Chances = {
-			["Common"] = 50, -- 50% chance
-			["Rare"] = 50, -- 50% chance
+			["Epic"] = 15, -- 50% chance
+			["Legendary"] = 58, -- 60% chance
+			["Divine"] = 25, -- 30% chance
+			["Secret"] = 2, -- 10% chance
 		},
 	},
 	["Kraken Crate"] = {
-		Health = 100,
+		Health = 37500,
 
-		SpawnChance = 10, -- chance of this crate spawning
+		SpawnChance = 0.7, -- chance of this crate spawning
 
-		RestockChance = 100, -- chance of this crate being restocked
+		RestockChance = 1.5, -- chance of this crate being restocked
 		RestockMin = 1, -- minimum amount of crates to restock
-		RestockMax = 7, -- maximum amount of crates to restock
+		RestockMax = 1, -- maximum amount of crates to restock
 
-		Product = 0, -- dev product
-		Price = 100, -- cash p rice
+		Product = 3359776710, -- dev product
+		Price = 2500000, -- cash p rice
 
-		Image = "",
+		Image = "rbxassetid://85351769081139",
 
 		LayoutOrder = 17,
 
 		Chances = {
-			["Common"] = 50, -- 50% chance
-			["Rare"] = 50, -- 50% chance
+			["Legendary"] = 30, -- 60% chance
+			["Divine"] = 60, -- 30% chance
+			["Secret"] = 10, -- 10% chance
 		},
 	},
 	["GL!TCH Crate"] = {
-		Health = 100,
+		Health = 60000,
 
-		SpawnChance = 10, -- chance of this crate spawning
+		SpawnChance = 0.3, -- chance of this crate spawning
 
-		RestockChance = 100, -- chance of this crate being restocked
+		RestockChance = 1, -- chance of this crate being restocked
 		RestockMin = 1, -- minimum amount of crates to restock
-		RestockMax = 7, -- maximum amount of crates to restock
+		RestockMax = 1, -- maximum amount of crates to restock
 
-		Product = 0, -- dev product
-		Price = 100, -- cash p rice
+		Product = 3359776872, -- dev product
+		Price = 15000000, -- cash p rice
 
-		Image = "",
+		Image = "rbxassetid://130097129619276",
 
 		LayoutOrder = 19,
 
 		Chances = {
-			["Common"] = 50, -- 50% chance
-			["Rare"] = 50, -- 50% chance
+			["Legendary"] = 10, -- 60% chance
+			["Divine"] = 50, -- 30% chance
+			["Secret"] = 40, -- 10% chance
 		},
 	},
 } :: { [string]: Types.CrateConfig }

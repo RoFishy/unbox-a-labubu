@@ -35,11 +35,25 @@ export type NPCDialogueOptions = {
 
 export type UserData = {
 	Cash: number,
+	LastJoin: number?,
 
 	Upgrades: {
 		Cash: number,
 		Luck: number,
 		Tool: number,
+	},
+
+	Luck: number,
+	CashMulti: number,
+
+	Gamepasses: {
+		VIP: boolean,
+		["x2 Money"]: boolean,
+		["x2 Luck"]: boolean,
+		["+2 Slots"]: boolean,
+		["Banhammer"]: boolean,
+		["Starter Pack"]: boolean,
+		["Ultimate Pack"]: boolean,
 	},
 
 	Labubus: { LabubuDataInfo },

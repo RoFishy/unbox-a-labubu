@@ -12,13 +12,14 @@ type Remotes = Remo.Remotes<{
 	SellAllLabubus: Remo.ClientToServer<>,
 
 	PurchaseUpgrade: Remo.ClientToServer<(string)>,
-
 	PurchaseCrate: Remo.ClientToServer<(string)>,
 
 	ClaimFreeReward: Remo.ClientToServer<>,
 
 	TweenModelScale: Remo.ServerToClient<(Instance, number, number, { any })>,
 	TweenModelPosition: Remo.ServerToClient<(Instance, CFrame, { any })>,
+
+	SetupPlotDisplay: Remo.ServerToClient<(string)>,
 }>
 
 local Remotes: Remotes = Remo.createRemotes({
@@ -32,13 +33,14 @@ local Remotes: Remotes = Remo.createRemotes({
 	SellAllLabubus = Remo.remote(),
 
 	PurchaseUpgrade = Remo.remote(t.string),
-
 	PurchaseCrate = Remo.remote(t.string),
 
 	ClaimFreeReward = Remo.remote(),
 
 	TweenModelScale = Remo.remote(t.Instance, t.numberPositive, t.numberPositive, t.table),
 	TweenModelPosition = Remo.remote(t.Instance, t.CFrame, t.table),
+
+	SetupPlotDisplay = Remo.remote(t.string),
 })
 
 return Remotes :: Remotes

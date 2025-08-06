@@ -121,13 +121,15 @@ function Upgrades:Update()
 				end
 
 				if NextValue then
+					Frame.Sell.name.Text = "$" .. FormatNumber.Comma(NextValue.Price)
+					Frame.level.Text = "LEVEL " .. tostring(NewValue)
 					if Frame.after:IsA("ImageLabel") then -- its a tool
 						local _NextValue = NextValue :: Types.ToolInfo
 
 						if _NextValue.Gamepass then
 							Frame.Sell.name.Text = "MAX"
 
-							return
+							continue
 						end
 
 						Frame.after.Image = _NextValue.Image
@@ -145,9 +147,6 @@ function Upgrades:Update()
 							Frame.before.Text = "x" .. tostring(_CurrentValue.NewValue)
 						end
 					end
-
-					Frame.Sell.name.Text = "$" .. FormatNumber.Comma(NextValue.Price)
-					Frame.level.Text = "LEVEL " .. tostring(NewValue)
 				else
 					Frame.level.Text = "LEVEL " .. tostring(NewValue)
 					Frame.Sell.name.Text = "MAX"

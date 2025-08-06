@@ -6,13 +6,15 @@ local Types = require("@Shared/Types")
 
 local Crate = require("@ServerClasses/Crate")
 
-local DataUtil = require("@ServerUtility/DataUtil")
-
 local Cache = require("@ServerUtility/Cache")
+local DataUtil = require("@ServerUtility/DataUtil")
 
 local GetRarity = require("@Utility/GetRarity")
 
 local CrateConfig = require("@Config/Crates")
+local UpgradeConfig = require("@Config/Upgrades")
+
+local Remotes = require("@Shared/Remotes")
 
 type PlotUtil = {
 	Plots: { [string]: Types.PlotData },
@@ -128,7 +130,19 @@ function PlotUtil.SetupSpawner(self: PlotUtil, Plot: string)
 		if Owner then
 			self.Plots[Plot].Spawner = task.spawn(function()
 				while true do
-					local RandomCrate = GetRarity(CrateConfig)
+					local PlayerData = DataUtil:GetData(Owner)
+
+					local Luck = 1
+					if PlayerData then
+						Luck = UpgradeConfig.Luck[PlayerData.Upgrades.Luck].NewValue
+					end
+					local RandomCrate = GetRarity(CrateConfig, function(CrateName)
+						if CrateConfig[CrateName].SpawnChance < 3 then
+							return true
+						else
+							return false
+						end
+					end, Luck)
 
 					local ChosenCrate = RandomCrate or "Crate"
 
@@ -175,6 +189,7 @@ function PlotUtil.AssignPlot(self: PlotUtil, Player: Player)
 
 		self:TeleportPlayerToPlot(Player)
 		self:SetupSpawner(PlotName)
+		Remotes.SetupPlotDisplay:fire(Player, PlotName)
 	end
 end
 

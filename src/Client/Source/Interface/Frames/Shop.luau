@@ -1,4 +1,5 @@
 -- // Services
+local MarketplaceService = game:GetService("MarketplaceService")
 local Players = game:GetService("Players")
 
 -- // Player
@@ -11,12 +12,22 @@ local Button = require("@ClientUtility/Button")
 -- // Module
 local InterfaceController = require("@Controllers/InterfaceController")
 
+local PassesModule = require("@Config/Passes")
+
 -- // UI
 local MainUI = PlayerGui:WaitForChild("UI")
 
 local ShopFrame = MainUI:WaitForChild("Frames"):WaitForChild("Shop")
+local MainFrame = ShopFrame:WaitForChild("Main"):WaitForChild("Main")
 
 local CloseButton = ShopFrame:WaitForChild("Close")
+
+local Packs = MainFrame:WaitForChild("Packs") :: Frame
+local Passes = MainFrame:WaitForChild("Passes") :: Frame
+
+type PurchaseFrame = Frame & {
+	Buy: TextButton,
+}
 
 -- // Init
 local Shop = {}
@@ -32,6 +43,32 @@ function Shop:Start()
 			InterfaceController:CloseAllFrames()
 		end)
 	)
+
+	-- packs
+	for _, obj in Packs:GetChildren() do
+		if obj:IsA("Frame") then
+			local Pack = obj :: PurchaseFrame
+			table.insert(
+				self.Junk,
+				Button(Pack.Buy, function()
+					MarketplaceService:PromptGamePassPurchase(LocalPlayer, PassesModule[obj.Name .. " Pack"])
+				end)
+			)
+		end
+	end
+
+	-- passes
+	for _, obj in Passes:GetChildren() do
+		if obj:IsA("Frame") then
+			local Pass = obj :: PurchaseFrame
+			table.insert(
+				self.Junk,
+				Button(Pass.Buy, function()
+					MarketplaceService:PromptGamePassPurchase(LocalPlayer, PassesModule[Pass.Name])
+				end)
+			)
+		end
+	end
 end
 
 function Shop:Stop()

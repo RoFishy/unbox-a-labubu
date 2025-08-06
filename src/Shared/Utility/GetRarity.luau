@@ -2,7 +2,7 @@ local Types = require("@Shared/Types")
 
 local function GetRarity(
 	Array: { [string | any]: number | { SpawnChance: number } | Types.CrateConfig },
-	RareChances: { string }?,
+	RarePredicate: ((string) -> boolean)?,
 	Luck: number?
 ): string?
 	Luck = Luck or 1
@@ -21,10 +21,10 @@ local function GetRarity(
 		end
 	end
 
-	if RareChances then
-		for _, _Name in RareChances do
-			if AdjustedChances[_Name] then
-				AdjustedChances[_Name] = AdjustedChances[_Name] * Luck
+	if RarePredicate then
+		for Name, _ in AdjustedChances do
+			if RarePredicate(Name) then
+				AdjustedChances[Name] = AdjustedChances[Name] * Luck
 			end
 		end
 	end

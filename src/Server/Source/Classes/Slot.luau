@@ -11,6 +11,8 @@ local GetPlayerPlot = require("@Utility/GetPlayerPlot")
 
 local FormatNumber = require("@Utility/FormatNumber")
 
+local UpgradeConfig = require("@Config/Upgrades")
+
 local DataUtil = require("@ServerUtility/DataUtil")
 
 -- // Functions
@@ -67,8 +69,14 @@ type SlotData = {
 
 export type Slot = typeof(setmetatable({} :: SlotData, Slot))
 
-function Slot.new(LabubuModel: Model, Player: Player, Config: Types.LabubuInfo, SlotName: string?): Slot?
-	assert(t.tuple(t.Instance, t.Instance, t.optional(t.string)))
+function Slot.new(
+	LabubuModel: Model,
+	Player: Player,
+	Config: Types.LabubuInfo,
+	SlotName: string?,
+	OfflineEarnings: number?
+): Slot?
+	assert(t.tuple(t.Instance, t.Instance, t.optional(t.string)), t.optional(t.number))
 
 	local self = setmetatable({}, Slot) :: Slot
 
@@ -114,13 +122,21 @@ function Slot.new(LabubuModel: Model, Player: Player, Config: Types.LabubuInfo, 
 	local Stand = self.SlotModel:WaitForChild("Stand") :: Part
 	self.LabubuModel:PivotTo(Stand.CFrame * CFrame.new(0, 5, 0) * CFrame.Angles(0, math.rad(-90), 0))
 
-	self:Setup()
+	self:Setup(OfflineEarnings)
 
 	return self
 end
 
-function Slot.Setup(self: Slot)
+function Slot.Setup(self: Slot, OfflineEarnings: number?)
 	self.SlotModel.Collect.Attachment.Billboard.Frame.income.Text = `${self.Config.Income}/s`
+
+	if OfflineEarnings then
+		self.SlotModel.Collect.OfflineAttachment.Billboard.Frame.offline.Text =
+			`${FormatNumber.Suffix(OfflineEarnings)} Earned Offline`
+		self.SlotModel.Collect.OfflineAttachment.Billboard.Enabled = true
+
+		self.CurrentEarned += OfflineEarnings
+	end
 
 	table.insert(
 		self.Threads,
@@ -129,7 +145,7 @@ function Slot.Setup(self: Slot)
 				local PlayerData = DataUtil:GetData(self.Owner)
 				local CashMultiplier = 1
 				if PlayerData then
-					CashMultiplier = PlayerData.Upgrades.Cash or 1
+					CashMultiplier = UpgradeConfig.Cash[PlayerData.Upgrades.Cash].NewValue
 				end
 
 				self.CurrentEarned += self.Config.Income * CashMultiplier
@@ -176,6 +192,7 @@ function Slot.Setup(self: Slot)
 
 					self.SlotModel.Collect.Attachment.Billboard.Frame.amount.Text =
 						`${FormatNumber.Suffix(self.CurrentEarned)}`
+					self.SlotModel.Collect.OfflineAttachment.Billboard.Enabled = false
 				end
 			end
 		end)

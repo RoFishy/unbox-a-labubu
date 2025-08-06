@@ -35,17 +35,19 @@ type LabubuData = {
 	Rarity: Types.Rarity,
 	RootPart: Part,
 	Model: Model,
+	OfflineEarnings: number?,
 }
 
 export type Labubu = typeof(setmetatable({} :: LabubuData, Labubu))
 
-local labubuCheck = t.tuple(t.string, t.Instance, t.optional(t.string))
-function Labubu.new(Name: string, Owner: Player, Slot: string?): Labubu
+local labubuCheck = t.tuple(t.string, t.Instance, t.optional(t.string), t.optional(t.number))
+function Labubu.new(Name: string, Owner: Player, Slot: string?, OfflineEarings: number?): Labubu
 	assert(labubuCheck(Name, Owner, Slot))
 
 	local self = setmetatable({}, Labubu) :: Labubu
 	self.Name = Name
 	self.Owner = Owner
+	self.OfflineEarnings = OfflineEarings
 
 	if Slot then
 		self.Slot = Slot
@@ -199,7 +201,7 @@ function Labubu.AddToSlot(self: Labubu)
 		self.Model:PivotTo(Stand.CFrame * CFrame.new(0, 5, 0) * CFrame.Angles(0, math.rad(-90), 0))
 		SlotInstance:SetAttribute("Labubu", self.Name)
 
-		SlotClass.new(self.Model, self.Owner, self.Config, self.Slot)
+		SlotClass.new(self.Model, self.Owner, self.Config, self.Slot, self.OfflineEarnings)
 	end
 
 	local PlayerData = DataUtil:GetData(self.Owner)

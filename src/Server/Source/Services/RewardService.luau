@@ -24,6 +24,14 @@ function RewardService:Start()
 					"Error"
 				)
 			else
+				if not Player:IsInGroup(490406169) then
+					return Remotes.ShowNotification:fire(
+						Player,
+						"You do not meet all of the requirements!",
+						Color3.fromRGB(255, 0, 0),
+						"Error"
+					)
+				end
 				local Base = GetPlayerPlot(Player)
 				if Base then
 					local Slots = Base:WaitForChild("Components"):WaitForChild("Slots") :: Folder

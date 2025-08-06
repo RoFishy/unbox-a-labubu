@@ -10,6 +10,8 @@ local Types = require("@Shared/Types")
 
 local GetPlayerPlot = require("@Utility/GetPlayerPlot")
 
+local GetLabubuInfo = require("@Utility/GetLabubuInfo")
+
 local Replica = require("@Packages/Replica")
 
 -- // Store
@@ -17,6 +19,7 @@ local PlayerStore = ProfileStore.New("PlayerStore", DataTemplate)
 
 -- // Const
 local DATA_TOKEN = Replica.Token("PlayerData")
+local MAX_OFFLINE_EARNINGS_TIME = 10800
 
 -- // Module
 type DataUtilType = {
@@ -32,6 +35,7 @@ type DataUtilType = {
 	SetupReplica: (self: DataUtilType, Player: Player) -> (),
 	SaveBaseData: (self: DataUtilType, Player: Player) -> (),
 	SetReplica: (self: DataUtilType, Player: Player, Data: Types.UserData) -> (),
+	CalculateOfflineEarnings: (self: DataUtilType, Player: Player, Labubu: string) -> number?,
 }
 local DataUtil = {
 	Profiles = {} :: { [Player]: any },
@@ -146,6 +150,28 @@ function DataUtil:_UpdateLeaderstats(Player: Player)
 	end
 end
 
+function DataUtil:CalculateOfflineEarnings(Player: Player, Labubu: string)
+	local Profile = self.Profiles[Player]
+
+	local _, Info = GetLabubuInfo(Labubu)
+	local Income = 0
+
+	if Info then
+		Income = Info.Income
+	end
+
+	if Profile then
+		local LastJoin = Profile.Data.LastJoin
+		if LastJoin then
+			local Time = tick() - LastJoin
+			Income = Income * (Time < MAX_OFFLINE_EARNINGS_TIME and Time or MAX_OFFLINE_EARNINGS_TIME)
+
+			return math.abs(math.ceil(Income / 2))
+		end
+	end
+	return
+end
+
 function DataUtil:GetData(Player: Player): Types.UserData?
 	local Profile = self.Profiles[Player]
 	if Profile then
@@ -185,6 +211,7 @@ function DataUtil:CleanupProfile(Player: Player)
 	self:SaveBaseData(Player)
 
 	if self.Profiles[Player] then
+		self.Profiles[Player].Data.LastJoin = tick()
 		self.Profiles[Player]:EndSession()
 	end
 end

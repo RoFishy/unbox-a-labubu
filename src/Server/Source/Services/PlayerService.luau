@@ -28,7 +28,9 @@ function PlayerService:Start()
 				local Labubus = Data.Labubus
 				if Labubus then
 					for _, LabubuData in Labubus do
-						local _Labubu = Labubu.new(LabubuData.Name, Player, LabubuData.Slot)
+						local OfflineEarnings = DataUtil:CalculateOfflineEarnings(Player, LabubuData.Name)
+
+						local _Labubu = Labubu.new(LabubuData.Name, Player, LabubuData.Slot, OfflineEarnings)
 						_Labubu:AddToSlot()
 					end
 				end
