@@ -63,6 +63,7 @@ return {
 
 		local PlayerData = DataUtil:GetData(Player)
 		if PlayerData then
+			PlayerData = table.clone(PlayerData)
 			PlayerData.Cash += 1_000
 			DataUtil:SetData(Player, PlayerData)
 		end
@@ -86,6 +87,7 @@ return {
 
 		local PlayerData = DataUtil:GetData(Player)
 		if PlayerData then
+			PlayerData = table.clone(PlayerData)
 			PlayerData.Cash += 10_000
 			DataUtil:SetData(Player, PlayerData)
 		end
@@ -102,6 +104,7 @@ return {
 	[1346702052] = function(Player: Player) -- VIP
 		local PlayerData = DataUtil:GetData(Player)
 		if PlayerData then
+			PlayerData = table.clone(PlayerData)
 			PlayerData.Luck += 0.25
 			PlayerData.CashMulti += 0.25
 			DataUtil:SetData(Player, PlayerData)
@@ -117,6 +120,7 @@ return {
 	[1347317999] = function(Player: Player) -- x2 Money
 		local PlayerData = DataUtil:GetData(Player)
 		if PlayerData then
+			PlayerData = table.clone(PlayerData)
 			PlayerData.CashMulti += 1
 			DataUtil:SetData(Player, PlayerData)
 		end
@@ -131,6 +135,7 @@ return {
 	[1347413880] = function(Player: Player) -- x2 Luck
 		local PlayerData = DataUtil:GetData(Player)
 		if PlayerData then
+			PlayerData = table.clone(PlayerData)
 			PlayerData.Luck += 1
 			DataUtil:SetData(Player, PlayerData)
 		end
@@ -145,6 +150,7 @@ return {
 	[1346052101] = function(Player: Player) -- +2 Slots
 		local PlayerData = DataUtil:GetData(Player)
 		if PlayerData then
+			PlayerData = table.clone(PlayerData)
 			table.insert(PlayerData.ExtraSlots, 11)
 			table.insert(PlayerData.ExtraSlots, 12)
 			DataUtil:SetData(Player, PlayerData)

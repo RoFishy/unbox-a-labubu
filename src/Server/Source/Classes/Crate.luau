@@ -1,4 +1,5 @@
 -- // Services
+local HttpService = game:GetService("HttpService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local SoundService = game:GetService("SoundService")
@@ -66,6 +67,8 @@ type CrateData = {
 	Primary: Part,
 	Destroying: typeof(Signal.new()),
 
+	StartingScale: number,
+
 	_junk: { RBXScriptConnection },
 }
 export type Crate = typeof(setmetatable({} :: CrateData, Crate))
@@ -106,6 +109,8 @@ function Crate.new(Name: string, SpawnLocation: Vector3, Owner: Player): Crate
 	else
 		Log.Error(`No crate with name {Name} was found within CratesFolder.`)
 	end
+
+	self.StartingScale = self.Model:GetScale()
 
 	task.delay(0.1, function()
 		self:Init(SpawnLocation)
@@ -233,6 +238,8 @@ function Crate.TakeDamage(self: Crate, Amount: number)
 			--EndScale = 0.85
 		end
 
+		EndScale = self.StartingScale * EndScale
+
 		local Info = { 0.05, Enum.EasingStyle.Sine, Enum.EasingDirection.Out } :: { any }
 
 		Remotes.TweenModelScale:fireAll(self.Model, 1, EndScale, Info)
@@ -240,10 +247,10 @@ function Crate.TakeDamage(self: Crate, Amount: number)
 		task.delay(0.075, function()
 			self.Model:ScaleTo(EndScale)
 
-			Remotes.TweenModelScale:fireAll(self.Model, EndScale, 1, Info)
+			Remotes.TweenModelScale:fireAll(self.Model, EndScale, self.StartingScale, Info)
 
 			task.delay(0.075, function()
-				self.Model:ScaleTo(1)
+				self.Model:ScaleTo(self.StartingScale)
 
 				-- kill myself if im at 0 health
 				if self.Config.Health <= 0 then
@@ -263,9 +270,12 @@ function Crate.TakeDamage(self: Crate, Amount: number)
 
 									local Luck = 1
 									if PlayerData then
-										Luck = 1 * UpgradesConfig.Luck[PlayerData.Upgrades.Luck].NewValue
+										local OwnerLuck = self.Owner:GetAttribute("Luck") or 1
+										Luck = (
+											1 * UpgradesConfig.Luck[PlayerData.Upgrades.Luck].NewValue
 											+ PlayerData.Luck
 											+ CurrentLuck.Value
+										) * OwnerLuck
 									end
 
 									local Size = GetRarity(SizeConfig, function(Name: string)
@@ -309,7 +319,10 @@ function Crate.TakeDamage(self: Crate, Amount: number)
 										if not OpenSlot then
 											PlayerData = DataUtil:GetData(self.Owner)
 											if PlayerData then
-												table.insert(PlayerData.Backpack, RandomLabubuName)
+												PlayerData.Backpack[HttpService:GenerateGUID(false)] = {
+													Name = RandomLabubuName,
+													Size = Size,
+												}
 
 												DataUtil:SetData(self.Owner, PlayerData)
 											end

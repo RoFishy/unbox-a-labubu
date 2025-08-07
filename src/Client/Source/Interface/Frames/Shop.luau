@@ -7,6 +7,9 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local LocalPlayer = Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 
+-- // obj
+local Gradients = ReplicatedStorage:WaitForChild("Gradients")
+
 -- // Util
 local Button = require("@ClientUtility/Button")
 
@@ -77,13 +80,15 @@ local function GetLowestIndex(Table: {}): number
 	local CurrentLowest: number
 	for index, _ in Table do
 		if not CurrentLowest then
-			if typeof(index) == "number" then
-				CurrentLowest = index
+			local _Index: number? = tonumber(index)
+			if _Index then
+				CurrentLowest = _Index
 			end
 		else
-			if typeof(index) == "number" then
-				if index < CurrentLowest then
-					CurrentLowest = index
+			local _Index: number? = tonumber(index)
+			if _Index then
+				if _Index < CurrentLowest then
+					CurrentLowest = _Index
 				end
 			end
 		end
@@ -274,6 +279,22 @@ function Shop:UpdateForeverPack(ForeverPackTable)
 				).PriceInRobux
 			or "FREE"
 		new.Visible = true
+
+		if tonumber(Index) == LowestIndex then
+			local gradient = Claimbtn:FindFirstChild("UIGradient") :: UIGradient
+			gradient.Enabled = true
+
+			local Common = Claimbtn:FindFirstChild("Common") :: UIGradient
+			if Common then
+				Common:Destroy()
+			end
+		else
+			local gradient = Claimbtn:FindFirstChild("UIGradient") :: UIGradient
+			gradient.Enabled = false
+
+			local Common = Gradients:WaitForChild("Common"):Clone()
+			Common.Parent = Claimbtn
+		end
 
 		table.insert(
 			ButtonShit,

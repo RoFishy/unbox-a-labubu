@@ -13,6 +13,8 @@ local DataUtil = require("@ServerUtility/DataUtil")
 local GetLabubuInfo = require("@Utility/GetLabubuInfo")
 local GetPlayerPlot = require("@Utility/GetPlayerPlot")
 
+local SizeConfig = require("@Config/Sizes")
+
 local LabubuClass = require("@ServerClasses/Labubu")
 
 -- // local functions
@@ -63,9 +65,9 @@ function LabubuService:Start()
 			Data = table.clone(Data)
 			DataTwo = table.clone(DataTwo)
 
-			if table.find(Data.Backpack, LabubuName) then
-				table.insert(DataTwo.Backpack, LabubuName)
-				table.remove(Data.Backpack, table.find(Data.Backpack, LabubuName))
+			if Data.Backpack[LabubuName] then
+				DataTwo.Backpack[LabubuName] = Data.Backpack[LabubuName]
+				Data.Backpack[LabubuName] = nil
 
 				DataUtil:SetData(FirstPlayer, Data)
 				DataUtil:SetData(PlayerToGive, DataTwo)
@@ -85,9 +87,19 @@ function LabubuService:Start()
 		end
 	end)
 
-	Remotes.GetLabubuTool:onRequest(function(Player: Player, Name: string): Instance
-		local Labubu = LabubuFolder:FindFirstChild(Name) :: Model
-		assert(Labubu, "No labubu model with name: " .. Name)
+	Remotes.GetLabubuTool:onRequest(function(Player: Player, ID: string): Instance
+		local LabubuData
+
+		local PlayerData = DataUtil:GetData(Player)
+		if PlayerData then
+			local Backpack = PlayerData.Backpack
+			if Backpack then
+				LabubuData = Backpack[ID]
+			end
+		end
+
+		local Labubu = LabubuFolder:FindFirstChild(LabubuData.Name) :: Model
+		assert(Labubu, "No labubu model with name: " .. LabubuData.Name)
 
 		Labubu = Labubu:Clone()
 
@@ -129,9 +141,25 @@ function LabubuService:Start()
 		Tool.Parent = Character
 		Labubu.Parent = Character
 
+		for _, Part in Labubu:GetDescendants() do
+			if Part:IsA("BasePart") then
+				Part.Anchored = false
+				Part.CanCollide = false
+			end
+		end
+
 		Labubu:PivotTo(HumanoidRootPart.CFrame * CFrame.new(1, 2, -3))
 
-		SetDisplayInfo(Labubu, Name)
+		SetDisplayInfo(Labubu, LabubuData.Name)
+
+		if LabubuData.Size then
+			local Size = SizeConfig[LabubuData.Size]
+			if Size then
+				Labubu:ScaleTo(Size.Scale)
+
+				Labubu:PivotTo(Labubu:GetPivot() * Size.Offset)
+			end
+		end
 
 		local WeldConstraint = Instance.new("WeldConstraint")
 		WeldConstraint.Part0 = HumanoidRootPart
@@ -183,21 +211,24 @@ function LabubuService:Start()
 			return
 		end
 
+		local LabubuData
+
 		local PlayerData = DataUtil:GetData(Player)
 		if PlayerData then
 			PlayerData = table.clone(PlayerData)
 
 			if PlayerData.Backpack then
-				local index = table.find(PlayerData.Backpack, Name)
-				if index then
-					table.remove(PlayerData.Backpack, index)
+				LabubuData = PlayerData.Backpack[Name]
+
+				if LabubuData then
+					PlayerData.Backpack[Name] = nil
 				else
 					return
 				end
 			end
 		end
 
-		local _Labubu = LabubuClass.new(Name, Player, Slot)
+		local _Labubu = LabubuClass.new(LabubuData.Name, Player, Slot, nil, LabubuData.Size)
 		_Labubu:AddToSlot()
 	end)
 end

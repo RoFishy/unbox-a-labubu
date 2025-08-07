@@ -23,6 +23,7 @@ export type SizeConfig = {
 	Scale: number,
 	CashMultiplier: number,
 	Offset: CFrame,
+	PickupDistance: number,
 }
 
 export type ToolInfo = {
@@ -66,7 +67,7 @@ export type UserData = {
 	},
 
 	Labubus: { LabubuDataInfo },
-	Backpack: { string },
+	Backpack: { [string]: { Name: string, Size: string? } },
 	Index: { string },
 
 	ExtraSlots: { number },

@@ -56,7 +56,7 @@ return function()
 	local PromptConnections = {} :: { RBXScriptConnection }
 
 	Replica.OnNew("PlayerData", function(_replica)
-		_replica:OnSet({ "Backpack" }, function(new_value: { string })
+		_replica:OnSet({ "Backpack" }, function(new_value: { [string]: { Name: string, Size: string? } })
 			if new_value == OldData then
 				return
 			else
@@ -80,11 +80,11 @@ return function()
 				end
 			end
 
-			for _, v: string in new_value do
-				local LabubuImage = GetLabubuImage(v)
+			for ID, value in new_value do
+				local LabubuImage = GetLabubuImage(value.Name)
 
 				local Frame = InventoryTemplate:Clone()
-				Frame.Name = v
+				Frame.Name = value.Name
 				Frame.Parent = Inventory
 				Frame.Visible = true
 				local Image = Frame:WaitForChild("ImageLabel") :: ImageLabel
@@ -96,7 +96,7 @@ return function()
 						if CurrentEquipped then
 							Remotes.DestroyLabubuTool:fire(CurrentEquipped)
 
-							if CurrentEquipped == v then
+							if CurrentEquipped == value.Name then
 								CurrentEquipped = nil
 								return
 							end
@@ -109,8 +109,8 @@ return function()
 						Humanoid:UnequipTools()
 
 						task.wait(0.1)
-						Remotes.GetLabubuTool:request(v):andThen(function(result: Instance)
-							CurrentEquipped = v
+						Remotes.GetLabubuTool:request(ID):andThen(function(result: Instance)
+							CurrentEquipped = value.Name
 
 							local NewHotbarButton = HammerButton:Clone()
 							NewHotbarButton.Name = result.Name
@@ -157,7 +157,7 @@ return function()
 											if CurrentEquipped then
 												Remotes.DestroyLabubuTool:fire(CurrentEquipped)
 
-												Remotes.AddToSlot:fire(CurrentEquipped, Slot.Name)
+												Remotes.AddToSlot:fire(ID, Slot.Name)
 											end
 										end)
 									)
@@ -185,7 +185,7 @@ return function()
 											if CurrentEquipped then
 												Remotes.DestroyLabubuTool:fire(CurrentEquipped)
 
-												Remotes.GiveLabubu:fire(CurrentEquipped, Player)
+												Remotes.GiveLabubu:fire(ID, Player)
 											end
 										end)
 									)
@@ -202,7 +202,7 @@ return function()
 								CurrentEquipped = nil
 								local _Frame = Hotbar:FindFirstChild(result.Name)
 
-								if result.Name == v then
+								if result.Name == value.Name then
 									Frame.Visible = true
 								end
 

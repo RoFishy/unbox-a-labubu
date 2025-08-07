@@ -10,20 +10,20 @@ local GetLabubuInfo = require("@Utility/GetLabubuInfo")
 local SellService = {}
 
 function SellService:Start()
-	Remotes.SellLabubu:connect(function(Player: Player, Labubu: string)
+	Remotes.SellLabubu:connect(function(Player: Player, LabubuID: string)
 		local Data = DataUtil:GetData(Player)
 
 		if Data then
 			Data = table.clone(Data)
 
 			if Data.Backpack then
-				for _, LabubuName in Data.Backpack do
-					if LabubuName == Labubu then
-						local _, Info = GetLabubuInfo(LabubuName)
+				for ID, LabubuData in Data.Backpack do
+					if ID == LabubuID then
+						local _, Info = GetLabubuInfo(LabubuData.Name)
 
 						if Info then
 							Data.Cash += Info.SellPrice
-							table.remove(Data.Backpack, table.find(Data.Backpack, LabubuName))
+							Data.Backpack[ID] = nil
 							break
 						end
 					end
@@ -41,8 +41,8 @@ function SellService:Start()
 			Data = table.clone(Data)
 
 			if Data.Backpack then
-				for _, LabubuName in Data.Backpack do
-					local _, Info = GetLabubuInfo(LabubuName)
+				for _, LabubuData in Data.Backpack do
+					local _, Info = GetLabubuInfo(LabubuData.Name)
 
 					if Info then
 						Data.Cash += Info.SellPrice

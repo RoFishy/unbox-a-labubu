@@ -61,10 +61,12 @@ function PurchaseService:AwardVIPPhysicalRewards(Player: Player)
 end
 
 function PurchaseService:AwardGamepass(Player: Player, GamePassId: number)
+	repeat
+		task.wait()
+	until not DataUtil.CurrentDataChange[Player]
+
 	local PlayerData = DataUtil:GetData(Player)
 	if PlayerData then
-		PlayerData = table.clone(PlayerData)
-
 		if Passes[GamePassId] then
 			local Success, Info = pcall(function()
 				return MarketplaceService:GetProductInfo(GamePassId, Enum.InfoType.GamePass)
@@ -84,9 +86,9 @@ function PurchaseService:AwardGamepass(Player: Player, GamePassId: number)
 				end
 			end
 
-			Passes[GamePassId](Player)
-
 			DataUtil:SetData(Player, PlayerData)
+
+			Passes[GamePassId](Player)
 		end
 	end
 end

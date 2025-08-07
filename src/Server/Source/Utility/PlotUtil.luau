@@ -188,9 +188,14 @@ function PlotUtil.SetupSpawner(self: PlotUtil, Plot: string)
 
 					local Luck = 1
 					if PlayerData then
-						Luck = 1 * UpgradeConfig.Luck[PlayerData.Upgrades.Luck].NewValue
-							+ PlayerData.Luck
-							+ CurrentLuck.Value
+						local PlayerLuck = Owner:GetAttribute("Luck") or 1 :: number
+						if typeof(PlayerLuck) == "number" then
+							Luck = (
+								1 * UpgradeConfig.Luck[PlayerData.Upgrades.Luck].NewValue
+								+ PlayerData.Luck
+								+ CurrentLuck.Value
+							) * PlayerLuck
+						end
 					end
 					local RandomCrate = GetRarity(CrateConfig, function(CrateName)
 						if CrateConfig[CrateName].SpawnChance < 3 then

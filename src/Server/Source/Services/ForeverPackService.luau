@@ -37,13 +37,26 @@ end
 
 function ForeverPackService:SetupPlayer(Player: Player)
 	local Data = DataUtil:GetData(Player)
+	if not Data then
+		repeat
+			Data = DataUtil:GetData(Player)
+
+			task.wait()
+		until Data or not Player.Parent
+	end
 	if Data then
+		if Data.LastForeverPackReset == 0 then
+			self:RefreshForeverPack(Player)
+		end
+
 		if workspace:GetServerTimeNow() - Data.LastForeverPackReset >= PACK_RESET_TIME then
 			self:RefreshForeverPack(Player)
 		end
 
 		task.spawn(function()
 			while Player and Player.Parent do
+				Data = DataUtil:GetData(Player)
+
 				if workspace:GetServerTimeNow() - Data.LastForeverPackReset >= PACK_RESET_TIME then
 					self:RefreshForeverPack(Player)
 				end

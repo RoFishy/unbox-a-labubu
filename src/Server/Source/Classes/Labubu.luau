@@ -1,4 +1,5 @@
 -- // Services
+local HttpService = game:GetService("HttpService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 -- //  Objects
@@ -106,6 +107,14 @@ function Labubu.new(Name: string, Owner: Player, Slot: string?, OfflineEarings: 
 	return self :: Labubu
 end
 
+function Labubu.SetupHover(self: Labubu)
+	Remotes.TweenModelPosition:fireAll(
+		self.Model,
+		self.Model:GetPivot() * CFrame.new(0, 0.30, 0),
+		{ 4, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true }
+	)
+end
+
 function Labubu.SetupDisplayInfo(self: Labubu)
 	local Attachment = self.RootPart:FindFirstChild("Attachment") :: Attachment
 	if not Attachment then
@@ -124,6 +133,13 @@ function Labubu.SetupDisplayInfo(self: Labubu)
 	local OldGradient = RarityText:FindFirstChildOfClass("UIGradient")
 	if OldGradient then
 		OldGradient:Destroy()
+	end
+
+	if self.SizeConfig and self.SizeName then
+		if Main:FindFirstChild(self.SizeName) then
+			local SizeLabel = Main:FindFirstChild(self.SizeName) :: TextLabel
+			SizeLabel.Visible = true
+		end
 	end
 
 	local NewGradient = NameGradients:FindFirstChild(self.Rarity)
@@ -169,10 +185,10 @@ function Labubu.Spawn(self: Labubu)
 			self.Slot = OpenSlotName
 			task.wait(1)
 
-			local OpenSlotCFrame = Stand.CFrame * CFrame.new(0, 5, 0) * CFrame.Angles(0, math.rad(-90), 0) * ExtraOffset
+			local OpenSlotCFrame = Stand.CFrame * CFrame.new(0, 5, 0) * ExtraOffset * CFrame.Angles(0, math.rad(-90), 0)
 			Remotes.TweenModelPosition:fireAll(self.Model, OpenSlotCFrame, { 1.5 })
 			task.delay(1.6, function()
-				self.Model:PivotTo(OpenSlotCFrame)
+				self.Model:PivotTo(OpenSlotCFrame * ExtraOffset)
 
 				self:AddToSlot()
 			end)
@@ -201,7 +217,9 @@ function Labubu.AddToSlot(self: Labubu)
 	local SlotInstance = Slots:FindFirstChild(self.Slot) :: Folder
 	local Stand = SlotInstance:WaitForChild("Stand") :: Part
 	if SlotInstance then
-		self.Model:PivotTo(Stand.CFrame * CFrame.new(0, 5, 0) * CFrame.Angles(0, math.rad(-90), 0) * ExtraOffset)
+		self.Model:PivotTo(Stand.CFrame * CFrame.new(0, 5, 0) * CFrame.Angles(0, math.rad(-90), 0))
+		self.Model:PivotTo(self.Model:GetPivot() * ExtraOffset)
+
 		SlotInstance:SetAttribute("Labubu", self.Name)
 		SlotInstance:SetAttribute("Size", self.SizeName)
 
@@ -222,6 +240,7 @@ function Labubu.AddToSlot(self: Labubu)
 	end
 
 	self:SetupPickupConnection()
+	self:SetupHover()
 end
 
 function Labubu.SetupPickupConnection(self: Labubu)
@@ -231,6 +250,10 @@ function Labubu.SetupPickupConnection(self: Labubu)
 	Prompt.RequiresLineOfSight = false
 	Prompt.HoldDuration = 1.5
 
+	if self.SizeConfig then
+		Prompt.MaxActivationDistance = self.SizeConfig.PickupDistance or 7
+	end
+
 	Prompt.Triggered:Connect(function(Player: Player)
 		if Player == self.Owner then
 			local PlayerData = DataUtil:GetData(self.Owner)
@@ -238,7 +261,10 @@ function Labubu.SetupPickupConnection(self: Labubu)
 				PlayerData = table.clone(PlayerData)
 
 				if PlayerData.Backpack then
-					table.insert(PlayerData.Backpack, self.Name)
+					PlayerData.Backpack[HttpService:GenerateGUID(false)] = {
+						Name = self.Name,
+						Size = self.SizeName,
+					}
 				end
 
 				DataUtil:SetData(self.Owner, PlayerData)

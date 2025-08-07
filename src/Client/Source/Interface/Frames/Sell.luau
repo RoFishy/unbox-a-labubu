@@ -21,6 +21,8 @@ local InterfaceController = require("@Controllers/InterfaceController")
 local GetLabubuImage = require("@Utility/GetLabubuImage")
 local GetLabubuInfo = require("@Utility/GetLabubuInfo")
 
+local GetDictionaryLength = require("@Utility/GetDictionaryLength")
+
 local Remotes = require("@Shared/Remotes")
 
 -- // UI
@@ -44,7 +46,7 @@ local MainHolder = SellFrame:WaitForChild("Main") :: ScrollingFrame
 local SellTemplate = MainHolder:WaitForChild("SellTemplate") :: SellTemplate
 
 -- // Vars
-local PlayerBackpack = {}
+local PlayerBackpack = {} :: { [string]: { Name: string, Size: string? } }
 
 -- // Init
 local Sell = {}
@@ -54,7 +56,7 @@ function Sell.Init()
 
 	-- // Data
 	Replica.OnNew("PlayerData", function(_replica)
-		_replica:OnSet({ "Backpack" }, function(new_value: { [string]: number })
+		_replica:OnSet({ "Backpack" }, function(new_value: { [string]: { Name: string, Size: string? } })
 			if new_value == PlayerBackpack then
 				return
 			end
@@ -75,7 +77,7 @@ function Sell:Start()
 	table.insert(
 		self.Junk,
 		Button(SellAllButton, function()
-			if #PlayerBackpack > 0 then
+			if GetDictionaryLength(PlayerBackpack) > 0 then
 				Remotes.SellAllLabubus:fire()
 				SoundService:PlayLocalSound(SellSound)
 			end
@@ -95,12 +97,10 @@ end
 
 function Sell:UpdateInventoryValue()
 	local TotalCost = 0
-	for _, Labubu in PlayerBackpack do
-		if typeof(Labubu) == "string" then
-			local _, LabubuInfo = GetLabubuInfo(Labubu)
-			if LabubuInfo then
-				TotalCost += LabubuInfo.SellPrice
-			end
+	for _, LabubuData in PlayerBackpack do
+		local _, LabubuInfo = GetLabubuInfo(LabubuData.Name)
+		if LabubuInfo then
+			TotalCost += LabubuInfo.SellPrice
 		end
 	end
 	InventoryValue.Text = `${TotalCost}`
@@ -109,9 +109,9 @@ end
 function Sell:Update()
 	self:Clear()
 	self:UpdateInventoryValue()
-	for _, Item in PlayerBackpack do
-		if typeof(Item) == "string" then
-			Item = Item :: string
+	for ID, Value: { Name: string, Size: string? } in PlayerBackpack do
+		if typeof(Value.Name) == "string" then
+			local Item = Value.Name :: string
 
 			local ExistingFrame = MainHolder:FindFirstChild(Item) :: SellTemplate
 			if ExistingFrame then
@@ -142,7 +142,7 @@ function Sell:Update()
 				Clone.Parent = MainHolder
 
 				Button(Clone.Sell, function()
-					Remotes.SellLabubu:fire(Item)
+					Remotes.SellLabubu:fire(ID)
 					SoundService:PlayLocalSound(SellSound)
 				end)
 			end

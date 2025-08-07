@@ -30,6 +30,7 @@ local MAX_OFFLINE_EARNINGS_TIME = 10800
 type DataUtilType = {
 	Profiles: { [Player]: any },
 	Replicas: { [Player]: any },
+	CurrentDataChange: { [Player]: boolean },
 	New: (Player) -> (),
 	InitializePlayer: (self: DataUtilType, Player: Player) -> (),
 	_SetupLeaderstats: (self: DataUtilType, Player: Player) -> (),
@@ -45,6 +46,7 @@ type DataUtilType = {
 local DataUtil = {
 	Profiles = {} :: { [Player]: any },
 	Replicas = {} :: { [Player]: any },
+	CurrentDataChange = {},
 } :: DataUtilType
 
 function DataUtil.New(Player: Player)
@@ -124,12 +126,17 @@ function DataUtil:SetupReplica(Player: Player)
 end
 
 function DataUtil:SetData(Player: Player, Data: Types.UserData)
+	self.CurrentDataChange[Player] = true
 	local Profile = self.Profiles[Player]
 	if Profile then
 		Profile.Data = Data
 
 		self:_UpdateLeaderstats(Player)
 		self:SetReplica(Player, Data)
+
+		self.CurrentDataChange[Player] = false
+	else
+		self.CurrentDataChange[Player] = false
 	end
 end
 
@@ -141,7 +148,7 @@ function DataUtil:SetReplica(Player: Player, Data: Types.UserData)
 		_replica:Set({ "Cash" }, Data.Cash)
 		_replica:Set({ "Upgrades" }, Data.Upgrades)
 		_replica:Set({ "ForeverPack" }, Data.ForeverPack)
-		_replica:Set({ "LastForeverPackRest" }, Data.LastForeverPackReset)
+		_replica:Set({ "LastForeverPackReset" }, Data.LastForeverPackReset)
 	end
 end
 

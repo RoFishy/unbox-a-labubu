@@ -1,4 +1,4 @@
-local Types = require("@Shared/Types")
+local Types = require(script.Parent.Parent:WaitForChild("Types"))
 
 return {
 	["Regular"] = {
@@ -6,17 +6,20 @@ return {
 		Scale = 2,
 		CashMultiplier = 1,
 		Offset = CFrame.new(0, 0, 0), -- the offset of the labubu shit
-	},
-	["Big"] = {
-		SpawnChance = 10, -- 10% chance
-		Scale = 5,
-		CashMultiplier = 1.25,
-		Offset = CFrame.new(0, 3, 0), -- the offset of the labubu shit
+		PickupDistance = 7,
 	},
 	["Huge"] = {
+		SpawnChance = 10, -- 10% chance
+		Scale = 4,
+		CashMultiplier = 1.5,
+		Offset = CFrame.new(0, 4, 0), -- the offset of the labubu shit
+		PickupDistance = 10, -- proximity prompt range
+	},
+	["Titanic"] = {
 		SpawnChance = 5, -- 5% chance
-		Scale = 7,
-		CashMultiplier = 1.75,
-		Offset = CFrame.new(0, 5, 0), -- the offset of the labubu shit
+		Scale = 8,
+		CashMultiplier = 2,
+		Offset = CFrame.new(0, 8, 0), -- the offset of the labubu shit
+		PickupDistance = 15, -- proximity prompt range
 	},
 } :: { [string]: Types.SizeConfig }

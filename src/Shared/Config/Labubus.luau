@@ -41,15 +41,15 @@ return {
 	["Rare"] = {
 		Labubus = {
 			["Astronaut"] = {
-				Income = 15,
+				Income = 12,
 				SellPrice = 130,
 			},
 			["Love"] = {
-				Income = 25,
+				Income = 15,
 				SellPrice = 250,
 			},
 			["Sea Salt Coconut"] = {
-				Income = 35,
+				Income = 18,
 				SellPrice = 500,
 			},
 		},
@@ -57,15 +57,15 @@ return {
 	["Epic"] = {
 		Labubus = {
 			["Green Grape"] = {
-				Income = 50,
+				Income = 25,
 				SellPrice = 650,
 			},
 			["Ninja"] = {
-				Income = 75,
+				Income = 35,
 				SellPrice = 900,
 			},
 			["Chestnut Cocoa"] = {
-				Income = 100,
+				Income = 50,
 				SellPrice = 1200,
 			},
 		},
@@ -73,15 +73,15 @@ return {
 	["Legendary"] = {
 		Labubus = {
 			["Viking"] = {
-				Income = 125,
+				Income = 95,
 				SellPrice = 1750,
 			},
 			["Beach"] = {
-				Income = 150,
+				Income = 120,
 				SellPrice = 2250,
 			},
 			["Squid"] = {
-				Income = 200,
+				Income = 150,
 				SellPrice = 3000,
 			},
 		},
@@ -89,11 +89,11 @@ return {
 	["Divine"] = {
 		Labubus = {
 			["Angel"] = {
-				Income = 300,
+				Income = 250,
 				SellPrice = 5000,
 			},
 			["Loyalty"] = {
-				Income = 450,
+				Income = 500,
 				SellPrice = 8000,
 			},
 		},
@@ -105,7 +105,7 @@ return {
 				SellPrice = 15000,
 			},
 			["Secret"] = {
-				Income = 1500,
+				Income = 1000,
 				SellPrice = 40000,
 			},
 		},

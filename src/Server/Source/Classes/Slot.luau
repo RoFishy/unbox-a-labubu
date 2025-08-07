@@ -124,9 +124,6 @@ function Slot.new(
 		end
 	end
 
-	local Stand = self.SlotModel:WaitForChild("Stand") :: Part
-	self.LabubuModel:PivotTo(Stand.CFrame * CFrame.new(0, 5, 0) * CFrame.Angles(0, math.rad(-90), 0))
-
 	self:Setup(OfflineEarnings)
 
 	return self
