@@ -56,6 +56,35 @@ end
 local LabubuService = {}
 
 function LabubuService:Start()
+	Remotes.GiveLabubu:connect(function(FirstPlayer, LabubuName, PlayerToGive)
+		local Data = DataUtil:GetData(FirstPlayer)
+		local DataTwo = DataUtil:GetData(PlayerToGive)
+		if Data and DataTwo then
+			Data = table.clone(Data)
+			DataTwo = table.clone(DataTwo)
+
+			if table.find(Data.Backpack, LabubuName) then
+				table.insert(DataTwo.Backpack, LabubuName)
+				table.remove(Data.Backpack, table.find(Data.Backpack, LabubuName))
+
+				DataUtil:SetData(FirstPlayer, Data)
+				DataUtil:SetData(PlayerToGive, DataTwo)
+
+				Remotes.ShowNotification:fire(
+					FirstPlayer,
+					"Successfully gave labubu to " .. PlayerToGive.Name,
+					Color3.fromRGB(0, 255, 0)
+				)
+
+				Remotes.ShowNotification:fire(
+					PlayerToGive,
+					`Successfully received labubu {LabubuName} from {FirstPlayer.Name}. It is in your backpack.`,
+					Color3.fromRGB(0, 255, 0)
+				)
+			end
+		end
+	end)
+
 	Remotes.GetLabubuTool:onRequest(function(Player: Player, Name: string): Instance
 		local Labubu = LabubuFolder:FindFirstChild(Name) :: Model
 		assert(Labubu, "No labubu model with name: " .. Name)

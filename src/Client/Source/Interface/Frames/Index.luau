@@ -69,7 +69,7 @@ function Index:SetMemes()
 			Image.ImageColor3 = Color3.fromRGB(255, 255, 255)
 			Name.Text = Frame.Name
 			if Info then
-				Amount.Text = `${Info.SellPrice}/s`
+				Amount.Text = `${Info.Income}/s`
 			end
 
 			TotalCollected += 1

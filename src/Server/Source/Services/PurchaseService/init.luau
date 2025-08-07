@@ -51,6 +51,7 @@ end
 function PurchaseService:AwardVIPPhysicalRewards(Player: Player)
 	local Character = Player.Character or Player.CharacterAdded:Wait()
 	local Humanoid = Character:WaitForChild("Humanoid") :: Humanoid
+	Player:SetAttribute("VIP", true)
 
 	Humanoid.WalkSpeed *= 1.25
 

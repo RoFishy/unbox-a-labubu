@@ -12,8 +12,8 @@ return {
 	},
 
 	-- gamepass shit
-	Luck = 1,
-	CashMulti = 1,
+	Luck = 0,
+	CashMulti = 0,
 
 	Gamepasses = {
 		VIP = false,

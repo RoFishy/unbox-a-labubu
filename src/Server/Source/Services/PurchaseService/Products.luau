@@ -215,7 +215,7 @@ return {
 				task.wait(1)
 				LuckTime.Value -= 1
 			end
-			CurrentLuck.Value = 1
+			CurrentLuck.Value = 0
 		end)
 
 		Remotes.ShowNotification:fireAll(

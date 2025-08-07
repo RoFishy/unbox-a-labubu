@@ -65,6 +65,8 @@ type SlotData = {
 
 	Connections: { RBXScriptConnection },
 	Threads: { thread },
+
+	SizeConfig: Types.SizeConfig?,
 }
 
 export type Slot = typeof(setmetatable({} :: SlotData, Slot))
@@ -74,9 +76,10 @@ function Slot.new(
 	Player: Player,
 	Config: Types.LabubuInfo,
 	SlotName: string?,
-	OfflineEarnings: number?
+	OfflineEarnings: number?,
+	SizeConfig: Types.SizeConfig?
 ): Slot?
-	assert(t.tuple(t.Instance, t.Instance, t.optional(t.string)), t.optional(t.number))
+	assert(t.tuple(t.Instance, t.Instance, t.optional(t.string), t.optional(t.number), t.optional(t.table)))
 
 	local self = setmetatable({}, Slot) :: Slot
 
@@ -85,6 +88,8 @@ function Slot.new(
 	self.Config = Config
 
 	self.CurrentEarned = 0
+
+	self.SizeConfig = SizeConfig
 
 	self.Threads = {}
 	self.Connections = {}
@@ -145,7 +150,8 @@ function Slot.Setup(self: Slot, OfflineEarnings: number?)
 				local PlayerData = DataUtil:GetData(self.Owner)
 				local CashMultiplier = 1
 				if PlayerData then
-					CashMultiplier = UpgradeConfig.Cash[PlayerData.Upgrades.Cash].NewValue + PlayerData.CashMulti
+					CashMultiplier = (1 * UpgradeConfig.Cash[PlayerData.Upgrades.Cash].NewValue + PlayerData.CashMulti)
+						* (self.SizeConfig and self.SizeConfig.CashMultiplier or 1)
 				end
 
 				self.CurrentEarned += self.Config.Income * CashMultiplier

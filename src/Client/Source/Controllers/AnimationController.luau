@@ -19,7 +19,7 @@ function AnimationController:Start()
 
 			local LoadedAnimation = Animator:LoadAnimation(Animation)
 			if string.find(Animation.Name, "Swing") then
-				LoadedAnimation:AdjustSpeed(2)
+				LoadedAnimation:AdjustSpeed(3)
 			end
 			LoadedAnimation:Play()
 		end

@@ -36,8 +36,27 @@ function PlayerService:Start()
 					for _, LabubuData in Labubus do
 						local OfflineEarnings = DataUtil:CalculateOfflineEarnings(Player, LabubuData.Name)
 
-						local _Labubu = Labubu.new(LabubuData.Name, Player, LabubuData.Slot, OfflineEarnings)
+						local _Labubu =
+							Labubu.new(LabubuData.Name, Player, LabubuData.Slot, OfflineEarnings, LabubuData.Size)
 						_Labubu:AddToSlot()
+					end
+				end
+			else
+				repeat
+					task.wait()
+					Data = DataUtil:GetData(Player)
+				until Data or not Player.Parent
+
+				if Data then
+					local Labubus = Data.Labubus
+					if Labubus then
+						for _, LabubuData in Labubus do
+							local OfflineEarnings = DataUtil:CalculateOfflineEarnings(Player, LabubuData.Name)
+
+							local _Labubu =
+								Labubu.new(LabubuData.Name, Player, LabubuData.Slot, OfflineEarnings, LabubuData.Size)
+							_Labubu:AddToSlot()
+						end
 					end
 				end
 			end
@@ -58,6 +77,17 @@ function PlayerService:Start()
 					return
 				end
 				self:_CharacterAdded(Player, Player.Character)
+			end
+		end)
+
+		task.delay(7, function()
+			if Player.Character then
+				if
+					not Player.Character:FindFirstChildOfClass("Tool")
+					and not Player.Backpack:FindFirstChildOfClass("Tool")
+				then
+					self:_CharacterAdded(Player, Player.Character)
+				end
 			end
 		end)
 	end)

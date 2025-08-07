@@ -47,11 +47,6 @@ local SmallerCash = Cash:WaitForChild("Smaller") :: Frame
 local ForeverPackHolder = MainFrame:WaitForChild("ForeverPack"):WaitForChild("Forever"):WaitForChild("Main")
 local ForeverPackRefreshTimer =
 	MainFrame:WaitForChild("ForeverPack"):WaitForChild("Forever"):WaitForChild("RefreshTime") :: TextLabel
-
--- // Const
-local FOREVER_PACK_PURCHASE = Color3.fromRGB(101, 232, 0)
-local FOREVER_PACK_NEXT = Color3.fromRGB(129, 129, 129)
-
 type PurchaseFrame = Frame & {
 	Buy: TextButton & {
 		name: TextLabel,
@@ -279,12 +274,6 @@ function Shop:UpdateForeverPack(ForeverPackTable)
 				).PriceInRobux
 			or "FREE"
 		new.Visible = true
-
-		if Index == LowestIndex then
-			Claimbtn.BackgroundColor3 = FOREVER_PACK_PURCHASE
-		else
-			Claimbtn.BackgroundColor3 = FOREVER_PACK_NEXT
-		end
 
 		table.insert(
 			ButtonShit,

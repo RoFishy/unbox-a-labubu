@@ -91,7 +91,7 @@ function LeaderboardService:RefreshLeaderboard(Leaderboard: "Cash" | "Unbox")
 	local LeaderboardData = Pages:GetCurrentPage()
 
 	for rank, data in LeaderboardData do
-		local Template = MainContents:WaitForChild("Template") :: LeaderboardFrame
+		local Template = MainContents:WaitForChild("Template"):Clone() :: LeaderboardFrame
 		local PlayerName = GetPlayerName(data.key)
 		if not PlayerName then
 			continue
@@ -111,7 +111,10 @@ end
 
 function LeaderboardService:ClearFrame(ScrollingFrame: ScrollingFrame)
 	for _, v in ScrollingFrame:GetChildren() do
-		if v:IsA("Frame") and v.Name ~= "Template" then
+		if v:IsA("Frame") then
+			if v.Name == "Template" then
+				continue
+			end
 			v:Destroy()
 		end
 	end

@@ -162,6 +162,34 @@ return function()
 										end)
 									)
 								end
+
+								for _, Player in Players:GetPlayers() do
+									if Player == LocalPlayer then
+										continue
+									end
+
+									local _Character = Player.Character or Player.CharacterAdded:Wait()
+
+									local RootPart = _Character:WaitForChild("HumanoidRootPart")
+
+									local Prompt = Instance.new("ProximityPrompt")
+									Prompt.Parent = RootPart
+									Prompt.ActionText = "Give Labubu"
+									Prompt.RequiresLineOfSight = false
+									Prompt.HoldDuration = 1.5
+
+									table.insert(Prompts, Prompt)
+									table.insert(
+										PromptConnections,
+										Prompt.Triggered:Connect(function()
+											if CurrentEquipped then
+												Remotes.DestroyLabubuTool:fire(CurrentEquipped)
+
+												Remotes.GiveLabubu:fire(CurrentEquipped, Player)
+											end
+										end)
+									)
+								end
 							end
 
 							Button(NewHotbarButton, function()

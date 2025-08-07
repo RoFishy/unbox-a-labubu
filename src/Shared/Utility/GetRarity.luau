@@ -1,7 +1,7 @@
 local Types = require("@Shared/Types")
 
 local function GetRarity(
-	Array: { [string | any]: number | { SpawnChance: number } | Types.CrateConfig },
+	Array: { [string | any]: number | { SpawnChance: number } | Types.SizeConfig | Types.CrateConfig },
 	RarePredicate: ((string) -> boolean)?,
 	Luck: number?
 ): string?

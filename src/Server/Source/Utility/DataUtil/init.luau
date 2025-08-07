@@ -194,15 +194,17 @@ end
 function DataUtil:SaveBaseData(Player: Player)
 	local Plot = GetPlayerPlot(Player)
 
-	local LabubuData = {} :: Types.LabubuDataInfo
+	local LabubuData = {} :: { Types.LabubuDataInfo }
 	if Plot then
 		local Slots = Plot:WaitForChild("Components"):WaitForChild("Slots") :: Folder
 		for _, Slot in Slots:GetChildren() do
-			local LabubuName = Slot:GetAttribute("Labubu")
+			local LabubuName = Slot:GetAttribute("Labubu") :: string
+			local LabubuSize = Slot:GetAttribute("Size") :: string
 			if LabubuName then
 				table.insert(LabubuData, {
 					Name = LabubuName,
 					Slot = Slot.Name,
+					Size = LabubuSize,
 				})
 			end
 		end

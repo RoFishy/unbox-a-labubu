@@ -25,7 +25,7 @@ function PlotController:Start()
 				:WaitForChild("Frame")
 
 			local Thumnail = Players:GetUserThumbnailAsync(
-				LocalPlayer.FollowUserId,
+				LocalPlayer.UserId,
 				Enum.ThumbnailType.HeadShot,
 				Enum.ThumbnailSize.Size420x420
 			)

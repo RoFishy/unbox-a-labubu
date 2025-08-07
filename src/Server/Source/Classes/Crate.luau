@@ -5,6 +5,7 @@ local SoundService = game:GetService("SoundService")
 
 -- // Obj
 local CratesFolder: Folder = ReplicatedStorage.Crates
+local CurrentLuck = ReplicatedStorage:WaitForChild("Luck"):WaitForChild("LuckAmount")
 
 -- // packages
 local Signal = require("@Packages/Signal")
@@ -27,7 +28,9 @@ local Spring = require("@Utility/Spring")
 
 local CrateConfig = require("@Config/Crates")
 local LabubuConfig = require("@Config/Labubus")
+local SizeConfig = require("@Config/Sizes")
 local ToolConfig = require("@Config/Tools")
+local UpgradesConfig = require("@Config/Upgrades")
 
 local Labubu = require("@ServerClasses/Labubu")
 
@@ -89,6 +92,14 @@ function Crate.new(Name: string, SpawnLocation: Vector3, Owner: Player): Crate
 		self.Model = Model:Clone()
 		if self.Model.PrimaryPart then
 			self.Primary = self.Model.PrimaryPart :: Part
+
+			self.Model.Parent = workspace
+
+			for _, d in self.Model:GetDescendants() do
+				if d:IsA("BasePart") then
+					d.Transparency = 1
+				end
+			end
 		else
 			Log.Error(`No primary part found for crate {Model:GetFullName()}`)
 		end
@@ -96,7 +107,9 @@ function Crate.new(Name: string, SpawnLocation: Vector3, Owner: Player): Crate
 		Log.Error(`No crate with name {Name} was found within CratesFolder.`)
 	end
 
-	self:Init(SpawnLocation)
+	task.delay(0.1, function()
+		self:Init(SpawnLocation)
+	end)
 	--task.delay(3, function()
 	--self:TakeDamage(100)
 	--end)
@@ -105,6 +118,17 @@ function Crate.new(Name: string, SpawnLocation: Vector3, Owner: Player): Crate
 end
 
 function Crate.Init(self: Crate, SpawnLocation: Vector3)
+	local IgnoreParts = { "HitEffect", "Primary", "Smoke" }
+	for _, d in self.Model:GetDescendants() do
+		if d:IsA("BasePart") then
+			if table.find(IgnoreParts, d.Name) then
+				continue
+			end
+			d.Transparency = 0
+		end
+	end
+
+	task.wait(0.1)
 	self:Spawn(SpawnLocation)
 	self:SetupAttachment()
 end
@@ -130,10 +154,15 @@ function Crate.SetupAttachment(self: Crate)
 		_Spring.Speed = 15
 
 		table.insert(self._junk, (RunService.Heartbeat:Connect(function()
-			local EndXValue = 1 * (self.Config.Health / self.MaxHealth)
+			local EndXValue = 1 * (math.abs(self.Config.Health) / self.MaxHealth)
+			if self.Config.Health < 0 or self.Config.Health == 0 then
+				_Spring.Speed = 500
+				EndXValue = 0
+			end
 			_Spring.Target = Vector3.new(EndXValue, 0, 0)
 
 			ProgressBar.Size = UDim2.new(_Spring.Position.X, 0, 1, 0)
+			_Spring.Speed = 15
 		end)))
 	end
 end
@@ -208,12 +237,12 @@ function Crate.TakeDamage(self: Crate, Amount: number)
 
 		Remotes.TweenModelScale:fireAll(self.Model, 1, EndScale, Info)
 
-		task.delay(0.06, function()
+		task.delay(0.075, function()
 			self.Model:ScaleTo(EndScale)
 
 			Remotes.TweenModelScale:fireAll(self.Model, EndScale, 1, Info)
 
-			task.delay(0.06, function()
+			task.delay(0.075, function()
 				self.Model:ScaleTo(1)
 
 				-- kill myself if im at 0 health
@@ -230,7 +259,26 @@ function Crate.TakeDamage(self: Crate, Amount: number)
 							if SubDictionary then
 								local RandomLabubuName, _ = GetRandomDictionaryIndex(SubDictionary.Labubus)
 								if RandomLabubuName then
-									local _Labubu = Labubu.new(RandomLabubuName, self.Owner)
+									local PlayerData = DataUtil:GetData(self.Owner)
+
+									local Luck = 1
+									if PlayerData then
+										Luck = 1 * UpgradesConfig.Luck[PlayerData.Upgrades.Luck].NewValue
+											+ PlayerData.Luck
+											+ CurrentLuck.Value
+									end
+
+									local Size = GetRarity(SizeConfig, function(Name: string)
+										local Value = SizeConfig[Name]
+
+										if Value.SpawnChance <= 10 then
+											return true
+										else
+											return false
+										end
+									end, Luck)
+
+									local _Labubu = Labubu.new(RandomLabubuName, self.Owner, nil, nil, Size)
 									local BrokenSound = SoundService:WaitForChild("BrokenCrate"):Clone() :: Sound
 									BrokenSound.Parent = _Labubu.RootPart
 									BrokenSound:Play()
@@ -238,16 +286,19 @@ function Crate.TakeDamage(self: Crate, Amount: number)
 									BrokenSound.Ended:Connect(function()
 										BrokenSound:Destroy()
 									end)
+									task.wait(0.1)
 									_Labubu:Spawn()
 
-									local PlayerData = DataUtil:GetData(self.Owner)
+									PlayerData = DataUtil:GetData(self.Owner)
 									if PlayerData then
 										PlayerData = table.clone(PlayerData)
 
 										PlayerData.Unboxes += 1
+
+										DataUtil:SetData(self.Owner, PlayerData)
 									end
 
-									task.delay(1.8, function()
+									task.delay(2.25, function()
 										self:Destroy()
 									end)
 
@@ -256,13 +307,14 @@ function Crate.TakeDamage(self: Crate, Amount: number)
 										local Slots = Base:WaitForChild("Components"):WaitForChild("Slots") :: Folder
 										local OpenSlot = GetNextOpenSlot(Slots)
 										if not OpenSlot then
+											PlayerData = DataUtil:GetData(self.Owner)
 											if PlayerData then
 												table.insert(PlayerData.Backpack, RandomLabubuName)
 
 												DataUtil:SetData(self.Owner, PlayerData)
 											end
 
-											task.delay(1, function()
+											task.delay(1.7, function()
 												_Labubu.Model:Destroy()
 											end)
 
@@ -280,69 +332,6 @@ function Crate.TakeDamage(self: Crate, Amount: number)
 				end
 			end)
 		end)
-		--[[
-		TweenModel.Scale(self.Model, 1, EndScale, Info, function()
-			TweenModel.Scale(self.Model, EndScale, 1, Info, function()
-				-- kill myself if im at 0 health
-				if self.Config.Health <= 0 then
-					self:CleanupConnections()
-					task.wait(0.3)
-					TweenModel.Scale(self.Model, 1, 0.00001, TweenInfo.new(0.4), function()
-						local ChosenRarity: Types.Rarity = GetRarity(self.Config.Chances) :: Types.Rarity
-						if ChosenRarity then
-							local SubDictionary = LabubuConfig[ChosenRarity]
-
-							if SubDictionary then
-								local RandomLabubuName, _ = GetRandomDictionaryIndex(SubDictionary.Labubus)
-								if RandomLabubuName then
-									local _Labubu = Labubu.new(RandomLabubuName, self.Owner)
-									local BrokenSound = SoundService:WaitForChild("BrokenCrate"):Clone() :: Sound
-									BrokenSound.Parent = _Labubu.RootPart
-									BrokenSound:Play()
-
-									BrokenSound.Ended:Connect(function()
-										BrokenSound:Destroy()
-									end)
-									_Labubu:Spawn()
-
-									task.delay(1.5, function()
-										self:Destroy()
-									end)
-
-									local Base = GetPlayerPlot(self.Owner)
-									if Base then
-										local Slots = Base:WaitForChild("Components"):WaitForChild("Slots") :: Folder
-										local OpenSlot = GetNextOpenSlot(Slots)
-										if not OpenSlot then
-											local PlayerData = DataUtil:GetData(self.Owner)
-
-											if PlayerData then
-												PlayerData = table.clone(PlayerData)
-
-												table.insert(PlayerData.Backpack, RandomLabubuName)
-
-												DataUtil:SetData(self.Owner, PlayerData)
-											end
-
-											task.delay(1, function()
-												_Labubu.Model:Destroy()
-											end)
-
-											return Remotes.ShowNotification:fire(
-												self.Owner,
-												`The {RandomLabubuName} Labubu has been added to your backpack`,
-												Color3.fromRGB(0, 255, 0)
-											)
-										end
-									end
-								end
-							end
-						end
-					end)
-				end
-			end)
-		end)
-		]]
 	end
 end
 
@@ -358,26 +347,6 @@ function Crate.SetupConnections(self: Crate)
 						-- only have it do dmg if its attack lmfao
 						if Tool:GetAttribute("Attacking") then
 							Tool:SetAttribute("Attacking", nil)
-
-							--[[
-							local Player = Players:GetPlayerFromCharacter(Character)
-							if Player then
-								local Base = GetPlayerPlot(Player)
-								if Base then
-									local Slots = Base:WaitForChild("Components"):WaitForChild("Slots") :: Folder
-									local OpenSlot = GetNextOpenSlot(Slots)
-									if not OpenSlot then
-										return Remotes.ShowNotification:fire(
-											Player,
-											"You have no open slots!",
-											Color3.fromRGB(255, 0, 0),
-											"Error"
-										)
-									end
-								end
-							end
-							]]
-							-- get the configuration for the tools
 
 							local Name = tonumber(Tool.Name)
 							if Name then

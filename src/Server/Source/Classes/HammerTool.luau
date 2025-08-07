@@ -118,7 +118,7 @@ function HammerTool:SetupConnections()
 				self.Object:SetAttribute("Attacking", true)
 			end)
 
-			task.delay(0.75, function()
+			task.delay(0.5, function()
 				Debounce = false
 				self.Object:SetAttribute("Attacking", nil)
 			end)

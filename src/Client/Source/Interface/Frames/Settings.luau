@@ -105,6 +105,9 @@ function Settings:Start()
 		Button(MusicFrame.Claim, function()
 			if MusicFrame.Claim.name.Text == "On" then
 				MusicFrame.Claim.name.Text = "Off"
+
+				workspace:WaitForChild("Music").Playing = false
+
 				local Gradient = MusicFrame.Claim:FindFirstChildOfClass("UIGradient")
 				if Gradient then
 					Gradient:Destroy()
@@ -114,6 +117,9 @@ function Settings:Start()
 				end
 			else
 				MusicFrame.Claim.name.Text = "On"
+
+				workspace:WaitForChild("Music").Playing = true
+
 				local Gradient = MusicFrame.Claim:FindFirstChildOfClass("UIGradient")
 				if Gradient then
 					Gradient:Destroy()

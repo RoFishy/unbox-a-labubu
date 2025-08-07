@@ -15,6 +15,8 @@ local GetLabubuInfo = require("@Utility/GetLabubuInfo")
 local GetPlayerPlot = require("@Utility/GetPlayerPlot")
 local Log = require("@Utility/Log")
 
+local SizeConfig = require("@Config/Sizes")
+
 local DataUtil = require("@ServerUtility/DataUtil")
 
 local SlotClass = require("@ServerClasses/Slot")
@@ -36,12 +38,14 @@ type LabubuData = {
 	RootPart: Part,
 	Model: Model,
 	OfflineEarnings: number?,
+	SizeConfig: Types.SizeConfig?,
+	SizeName: string?,
 }
 
 export type Labubu = typeof(setmetatable({} :: LabubuData, Labubu))
 
-local labubuCheck = t.tuple(t.string, t.Instance, t.optional(t.string), t.optional(t.number))
-function Labubu.new(Name: string, Owner: Player, Slot: string?, OfflineEarings: number?): Labubu
+local labubuCheck = t.tuple(t.string, t.Instance, t.optional(t.string), t.optional(t.number), t.optional(t.number))
+function Labubu.new(Name: string, Owner: Player, Slot: string?, OfflineEarings: number?, Size: string?): Labubu
 	assert(labubuCheck(Name, Owner, Slot))
 
 	local self = setmetatable({}, Labubu) :: Labubu
@@ -75,6 +79,19 @@ function Labubu.new(Name: string, Owner: Player, Slot: string?, OfflineEarings: 
 		end
 	else
 		Log.Error(`No model found for labubu: {Name}`)
+	end
+
+	if Size then
+		local Config = SizeConfig[Size]
+		self.SizeConfig = Config
+		self.SizeName = Size
+		self.Model:ScaleTo(Config.Scale)
+	end
+
+	for _, d in self.Model:GetDescendants() do
+		if d:IsA("BasePart") then
+			d.CanCollide = false
+		end
 	end
 
 	self:SetupDisplayInfo()
@@ -132,12 +149,17 @@ function Labubu.Spawn(self: Labubu)
 		return
 	end
 
+	local ExtraOffset = CFrame.new(0, 0, 0)
+	if self.SizeConfig then
+		ExtraOffset = self.SizeConfig.Offset
+	end
+
 	self.Model:PivotTo(CrateSpawn.CFrame * CFrame.new(0, -5, 0) * CFrame.Angles(0, math.rad(180), 0))
 
-	Remotes.TweenModelPosition:fireAll(self.Model, CrateSpawn.CFrame * CFrame.new(0, 2, 0), { 0.75 })
+	Remotes.TweenModelPosition:fireAll(self.Model, CrateSpawn.CFrame * CFrame.new(0, 2, 0) * ExtraOffset, { 0.75 })
 
-	task.delay(0.8, function()
-		self.Model:PivotTo(CrateSpawn.CFrame * CFrame.new(0, 2, 0))
+	task.delay(1, function()
+		self.Model:PivotTo(CrateSpawn.CFrame * CFrame.new(0, 2, 0) * ExtraOffset)
 		local Slots = Components:WaitForChild("Slots") :: Folder
 		local OpenSlotName = GetNextOpenSlot(Slots)
 
@@ -145,41 +167,17 @@ function Labubu.Spawn(self: Labubu)
 			local OpenSlot = Slots:WaitForChild(OpenSlotName)
 			local Stand = OpenSlot:WaitForChild("Stand") :: Part
 			self.Slot = OpenSlotName
-			task.wait(0.75)
-			Remotes.TweenModelPosition:fireAll(
-				self.Model,
-				Stand.CFrame * CFrame.new(0, 5, 0) * CFrame.Angles(0, math.rad(-90), 0),
-				{ 1.5 }
-			)
+			task.wait(1)
+
+			local OpenSlotCFrame = Stand.CFrame * CFrame.new(0, 5, 0) * CFrame.Angles(0, math.rad(-90), 0) * ExtraOffset
+			Remotes.TweenModelPosition:fireAll(self.Model, OpenSlotCFrame, { 1.5 })
 			task.delay(1.6, function()
-				self.Model:PivotTo(Stand.CFrame * CFrame.new(0, 5, 0) * CFrame.Angles(0, math.rad(-90), 0))
+				self.Model:PivotTo(OpenSlotCFrame)
 
 				self:AddToSlot()
 			end)
 		end
 	end)
-
-	--[[
-	TweenModel.Position(self.Model, CrateSpawn.CFrame * CFrame.new(0, 2, 0), TweenInfo.new(0.75), function()
-		local Slots = Components:WaitForChild("Slots") :: Folder
-		local OpenSlotName = GetNextOpenSlot(Slots)
-
-		if OpenSlotName then
-			local OpenSlot = Slots:WaitForChild(OpenSlotName)
-			local Stand = OpenSlot:WaitForChild("Stand") :: Part
-			self.Slot = OpenSlotName
-			task.wait(1.25)
-			TweenModel.Position(
-				self.Model,
-				Stand.CFrame * CFrame.new(0, 5, 0) * CFrame.Angles(0, math.rad(-90), 0),
-				TweenInfo.new(1.5),
-				function()
-					self:AddToSlot()
-				end
-			)
-		end
-	end)
-	]]
 end
 
 function Labubu.AddToSlot(self: Labubu)
@@ -193,15 +191,21 @@ function Labubu.AddToSlot(self: Labubu)
 		return
 	end
 
+	local ExtraOffset = CFrame.new(0, 0, 0)
+	if self.SizeConfig then
+		ExtraOffset = self.SizeConfig.Offset
+	end
+
 	local Slots = Components:WaitForChild("Slots") :: Folder
 
 	local SlotInstance = Slots:FindFirstChild(self.Slot) :: Folder
 	local Stand = SlotInstance:WaitForChild("Stand") :: Part
 	if SlotInstance then
-		self.Model:PivotTo(Stand.CFrame * CFrame.new(0, 5, 0) * CFrame.Angles(0, math.rad(-90), 0))
+		self.Model:PivotTo(Stand.CFrame * CFrame.new(0, 5, 0) * CFrame.Angles(0, math.rad(-90), 0) * ExtraOffset)
 		SlotInstance:SetAttribute("Labubu", self.Name)
+		SlotInstance:SetAttribute("Size", self.SizeName)
 
-		SlotClass.new(self.Model, self.Owner, self.Config, self.Slot, self.OfflineEarnings)
+		SlotClass.new(self.Model, self.Owner, self.Config, self.Slot, self.OfflineEarnings, self.SizeConfig)
 	end
 
 	local PlayerData = DataUtil:GetData(self.Owner)
@@ -256,6 +260,7 @@ function Labubu.SetupPickupConnection(self: Labubu)
 
 			if SlotInstance then
 				SlotInstance:SetAttribute("Labubu", nil)
+				SlotInstance:SetAttribute("Size", nil)
 			end
 			self.Model:Destroy()
 		end

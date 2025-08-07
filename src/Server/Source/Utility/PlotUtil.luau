@@ -113,7 +113,7 @@ function PlotUtil.SetupGamepasses(_: PlotUtil, Plot: string)
 	PlotModel.Gamepasses.x2Cash.Stand.Touched:Connect(function(Hit)
 		local Player = Players:GetPlayerFromCharacter(Hit.Parent)
 		if Player then
-			MarketplaceService:PromptGamePassPurchase(Player, Passes["x2 Cash"])
+			MarketplaceService:PromptGamePassPurchase(Player, Passes["x2 Money"])
 		end
 	end)
 
@@ -188,7 +188,7 @@ function PlotUtil.SetupSpawner(self: PlotUtil, Plot: string)
 
 					local Luck = 1
 					if PlayerData then
-						Luck = UpgradeConfig.Luck[PlayerData.Upgrades.Luck].NewValue
+						Luck = 1 * UpgradeConfig.Luck[PlayerData.Upgrades.Luck].NewValue
 							+ PlayerData.Luck
 							+ CurrentLuck.Value
 					end

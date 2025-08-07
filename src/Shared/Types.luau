@@ -17,6 +17,14 @@ export type CrateConfig = {
 	Chances: { [Rarity]: number },
 }
 
+export type SizeConfig = {
+	SpawnChance: number,
+
+	Scale: number,
+	CashMultiplier: number,
+	Offset: CFrame,
+}
+
 export type ToolInfo = {
 	Damage: number,
 	Price: number,
@@ -79,6 +87,7 @@ export type Rarity = "Uncommon" | "Common" | "Rare" | "Epic" | "Legendary" | "Di
 export type LabubuDataInfo = {
 	Name: string,
 	Slot: string,
+	Size: string,
 }
 
 export type LabubuInfo = {
