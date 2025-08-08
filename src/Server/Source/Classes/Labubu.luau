@@ -200,6 +200,26 @@ function Labubu.Spawn(self: Labubu)
 
 				self:AddToSlot()
 			end)
+		else
+			local PlayerData = DataUtil:GetData(self.Owner)
+			if PlayerData then
+				PlayerData.Backpack[HttpService:GenerateGUID(false)] = {
+					Name = self.Name,
+					Size = self.SizeName,
+				}
+
+				DataUtil:SetData(self.Owner, PlayerData)
+			end
+
+			task.delay(1.7, function()
+				self.Model:Destroy()
+			end)
+
+			return Remotes.ShowNotification:fire(
+				self.Owner,
+				`The {self.Name} Labubu has been added to your backpack`,
+				Color3.fromRGB(0, 255, 0)
+			)
 		end
 	end)
 end

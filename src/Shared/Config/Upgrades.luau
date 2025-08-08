@@ -6,39 +6,39 @@ local CashUpgrades = {
 		NewValue = 1,
 	},
 	[2] = {
-		Price = 500,
+		Price = 5000,
 		NewValue = 1.1,
 	},
 	[3] = {
-		Price = 2500,
+		Price = 25000,
 		NewValue = 1.2,
 	},
 	[4] = {
-		Price = 9500,
+		Price = 95000,
 		NewValue = 1.3,
 	},
 	[5] = {
-		Price = 19000,
+		Price = 190000,
 		NewValue = 1.4,
 	},
 	[6] = {
-		Price = 75000,
+		Price = 750000,
 		NewValue = 1.5,
 	},
 	[7] = {
-		Price = 250000,
+		Price = 2500000,
 		NewValue = 1.75,
 	},
 	[8] = {
-		Price = 950000,
+		Price = 9500000,
 		NewValue = 2,
 	},
 	[9] = {
-		Price = 5000000,
+		Price = 50000000,
 		NewValue = 2.5,
 	},
 	[10] = {
-		Price = 12000000,
+		Price = 120000000,
 		NewValue = 3,
 	},
 } :: { [number]: Types.UpgradeInfo<number> }
@@ -49,39 +49,39 @@ local LuckUpgrades = {
 		NewValue = 1,
 	},
 	[2] = {
-		Price = 1000,
+		Price = 10000,
 		NewValue = 1.2,
 	},
 	[3] = {
-		Price = 5000,
+		Price = 50000,
 		NewValue = 1.4,
 	},
 	[4] = {
-		Price = 8500,
+		Price = 85000,
 		NewValue = 1.6,
 	},
 	[5] = {
-		Price = 25000,
+		Price = 250000,
 		NewValue = 1.8,
 	},
 	[6] = {
-		Price = 75000,
+		Price = 750000,
 		NewValue = 2,
 	},
 	[7] = {
-		Price = 180000,
+		Price = 1800000,
 		NewValue = 2.5,
 	},
 	[8] = {
-		Price = 500000,
+		Price = 5000000,
 		NewValue = 3,
 	},
 	[9] = {
-		Price = 2250000,
+		Price = 22500000,
 		NewValue = 4,
 	},
 	[10] = {
-		Price = 7000000,
+		Price = 70000000,
 		NewValue = 5,
 	},
 } :: { [number]: Types.UpgradeInfo<number> }

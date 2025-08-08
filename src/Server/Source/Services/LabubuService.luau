@@ -1,5 +1,7 @@
 -- // Services
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TeleportService = game:GetService("TeleportService")
 
 -- // obj
 local NameGradients = ReplicatedStorage.Gradients
@@ -51,6 +53,17 @@ local function SetDisplayInfo(Labubu: Model, Name: string)
 	if NewGradient then
 		local NewClone = NewGradient:Clone()
 		NewClone.Parent = RarityText
+	end
+end
+
+local function RejoinPlayer(Player: Player)
+	if #Players:GetPlayers() > 1 then
+		local Options = Instance.new("TeleportOptions")
+		Options.ServerInstanceId = game.JobId
+
+		TeleportService:TeleportAsync(game.PlaceId, { Player }, Options)
+	else
+		Player:Kick("Data Load Fail - Please Rejoin!")
 	end
 end
 
@@ -232,6 +245,40 @@ function LabubuService:Start()
 		local _Labubu = LabubuClass.new(LabubuData.Name, Player, Slot, nil, LabubuData.Size)
 		_Labubu:AddToSlot()
 	end)
+end
+
+function LabubuService:ValidatePlot(Player: Player)
+	local PlotModel = GetPlayerPlot(Player)
+	if PlotModel and PlotModel:IsA("Model") then
+		local Components = PlotModel:FindFirstChild("Components") :: Folder
+		if Components then
+			local Slots = Components:FindFirstChild("Slots") :: Folder
+			if Slots then
+				for _, Slot in Slots:GetChildren() do
+					local Labubu = Slot:GetAttribute("Labubu")
+					if Labubu then
+						local Stand = Slot:FindFirstChild("Stand") :: Part
+
+						local RaycastParams = RaycastParams.new()
+						RaycastParams.FilterDescendantsInstances = { Stand }
+						RaycastParams.FilterType = Enum.RaycastFilterType.Exclude
+						RaycastParams.IgnoreWater = true
+
+						local Result = workspace:Raycast(
+							Stand.Position + Vector3.new(0, 1, 0),
+							Vector3.new(0, 200, 0),
+							RaycastParams
+						)
+						if Result then
+							if not Result.Instance then
+								RejoinPlayer(Player)
+							end
+						end
+					end
+				end
+			end
+		end
+	end
 end
 
 return LabubuService

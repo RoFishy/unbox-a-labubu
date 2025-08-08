@@ -217,31 +217,27 @@ function PlotUtil.SetupSpawner(self: PlotUtil, Plot: string)
 					local _Crate = Crate.new(ChosenCrate, PlotModel.Components.CrateSpawn.Position, Owner)
 					self.Plots[Plot].CurrentCrate = _Crate :: Crate.Crate
 
-					local CrateConnection = Remotes.HitBox:connect(
-						function(Player: Player, BoxHit: Instance, Tool: string)
-							if BoxHit == _Crate.Model then
-								if Player == Owner then
-									local Character = Player.Character or Player.CharacterAdded:Wait()
+					local CrateConnection = Remotes.HitBox:connect(function(Player: Player, Tool: string)
+						if Player == Owner then
+							local Character = Player.Character or Player.CharacterAdded:Wait()
 
-									local RootPart = Character:FindFirstChild("HumanoidRootPart") :: Part
+							local RootPart = Character:FindFirstChild("HumanoidRootPart") :: Part
 
-									if RootPart then
-										if (RootPart.Position - _Crate.Primary.Position).Magnitude <= 15 then
-											local Name = tonumber(Tool)
-											if Name then
-												if _Crate.Config.Health > 0 then
-													local ToolInfo: Types.ToolInfo = ToolConfig[Name]
-													if ToolInfo then
-														_Crate:TakeDamage(ToolInfo.Damage)
-													end
-												end
+							if RootPart then
+								if (RootPart.Position - _Crate.Primary.Position).Magnitude <= 10 then
+									local Name = tonumber(Tool)
+									if Name then
+										if _Crate.Config.Health > 0 then
+											local ToolInfo: Types.ToolInfo = ToolConfig[Name]
+											if ToolInfo then
+												_Crate:TakeDamage(ToolInfo.Damage)
 											end
 										end
 									end
 								end
 							end
 						end
-					)
+					end)
 
 					_Crate.Destroying:Wait()
 					CrateConnection()

@@ -10,6 +10,7 @@ local Labubu = require("@ServerClasses/Labubu")
 
 local CrateShopService = require("@Services/CrateShopService")
 local ForeverPackService = require("@Services/ForeverPackService")
+local LabubuService = require("@Services/LabubuService")
 local PurchaseService = require("@Services/PurchaseService")
 
 local Replica = require("@Packages/Replica") :: any
@@ -40,6 +41,8 @@ function PlayerService:Start()
 							Labubu.new(LabubuData.Name, Player, LabubuData.Slot, OfflineEarnings, LabubuData.Size)
 						_Labubu:AddToSlot()
 					end
+
+					LabubuService:ValidatePlot(Player)
 				end
 			else
 				repeat

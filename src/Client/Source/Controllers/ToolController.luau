@@ -10,12 +10,40 @@ local Remotes = require("@Shared/Remotes")
 -- // init
 local ToolService = {}
 
-function ToolService:Start()
-	local Backpack = LocalPlayer.Backpack
+function ToolService:Init()
+	--local Backpack = LocalPlayer:WaitForChild("Backpack")
 
+	--local CurrentTool: string = ""
 	local Debounce = false
+
+	local Mouse = LocalPlayer:GetMouse()
+
+	Mouse.Button1Down:Connect(function()
+		local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+
+		if Character then
+			if Character:FindFirstChildOfClass("Tool") then
+				if Debounce then
+					return
+				end
+
+				Debounce = true
+
+				task.delay(0.5, function()
+					Debounce = false
+				end)
+				Remotes.HitBox:fire(Character:FindFirstChildOfClass("Tool").Name)
+			end
+		end
+	end)
+
+	--[[
 	Backpack.ChildAdded:Connect(function(Child: Instance)
+		if Child.Name == CurrentTool then
+			return
+		end
 		if Child:IsA("Tool") then
+			CurrentTool = Child.Name
 			Child.Activated:Connect(function()
 				if Debounce then
 					return
@@ -25,7 +53,10 @@ function ToolService:Start()
 				task.delay(0.5, function()
 					Debounce = false
 				end)
-				local Mouse = LocalPlayer:GetMouse()
+
+				Remotes.HitBox:fire(Child.Name)
+
+                local Mouse = LocalPlayer:GetMouse()
 
 				if Mouse.Target then
 					local Target = Mouse.Target
@@ -41,6 +72,7 @@ function ToolService:Start()
 			end)
 		end
 	end)
+    ]]
 end
 
 return ToolService

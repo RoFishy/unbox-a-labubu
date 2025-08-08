@@ -1,5 +1,4 @@
 -- // Services
-local HttpService = game:GetService("HttpService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local SoundService = game:GetService("SoundService")
@@ -34,9 +33,6 @@ local ToolConfig = require("@Config/Tools")
 local UpgradesConfig = require("@Config/Upgrades")
 
 local Labubu = require("@ServerClasses/Labubu")
-
-local GetNextOpenSlot = require("@Utility/GetNextOpenSlot")
-local GetPlayerPlot = require("@Utility/GetPlayerPlot")
 
 -- // Const
 local SCALE_VALUES = {
@@ -278,7 +274,6 @@ function Crate.TakeDamage(self: Crate, Amount: number)
 											+ PlayerData.Luck
 											+ CurrentLuck.Value
 										) * OwnerLuck
-										print(Luck)
 									end
 
 									local Size = GetRarity(SizeConfig, function(Name: string)
@@ -314,33 +309,6 @@ function Crate.TakeDamage(self: Crate, Amount: number)
 									task.delay(2.25, function()
 										self:Destroy()
 									end)
-
-									local Base = GetPlayerPlot(self.Owner)
-									if Base then
-										local Slots = Base:WaitForChild("Components"):WaitForChild("Slots") :: Folder
-										local OpenSlot = GetNextOpenSlot(Slots)
-										if not OpenSlot then
-											PlayerData = DataUtil:GetData(self.Owner)
-											if PlayerData then
-												PlayerData.Backpack[HttpService:GenerateGUID(false)] = {
-													Name = RandomLabubuName,
-													Size = Size,
-												}
-
-												DataUtil:SetData(self.Owner, PlayerData)
-											end
-
-											task.delay(1.7, function()
-												_Labubu.Model:Destroy()
-											end)
-
-											return Remotes.ShowNotification:fire(
-												self.Owner,
-												`The {RandomLabubuName} Labubu has been added to your backpack`,
-												Color3.fromRGB(0, 255, 0)
-											)
-										end
-									end
 								end
 							end
 						end

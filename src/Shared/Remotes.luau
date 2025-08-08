@@ -23,7 +23,7 @@ type Remotes = Remo.Remotes<{
 	SetupPlotDisplay: Remo.ServerToClient<(string)>,
 
 	ClaimForeverPack: Remo.ServerAsync<(), ({ any }?)>,
-	HitBox: Remo.ClientToServer<(Instance, string)>,
+	HitBox: Remo.ClientToServer<(string)>,
 }>
 
 local Remotes: Remotes = Remo.createRemotes({
@@ -49,7 +49,7 @@ local Remotes: Remotes = Remo.createRemotes({
 
 	ClaimForeverPack = Remo.remote().returns(t.optional(t.table)),
 
-	HitBox = Remo.remote(t.Instance, t.string),
+	HitBox = Remo.remote(t.string),
 })
 
 return Remotes :: Remotes
