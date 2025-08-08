@@ -84,6 +84,12 @@ function HammerTool.new(Player: Player, Name: number?): HammerToolClass?
 		end
 	end)
 
+	for _, d in self.Object:GetDescendants() do
+		if d:IsA("BasePart") then
+			d.CanTouch = false
+		end
+	end
+
 	return self :: HammerToolClass
 end
 
@@ -114,13 +120,24 @@ function HammerTool:SetupConnections()
 				SwingSound:Destroy()
 			end)
 
+			for _, v in self.Object:GetDescendants() do
+				if v:IsA("BasePart") then
+					v.CanTouch = true
+				end
+			end
+
 			task.delay(0.2, function()
 				self.Object:SetAttribute("Attacking", true)
 			end)
 
 			task.delay(0.5, function()
 				Debounce = false
-				self.Object:SetAttribute("Attacking", nil)
+				self.Object:SetAttribute("Attacking", false)
+				for _, v in self.Object:GetDescendants() do
+					if v:IsA("BasePart") then
+						v.CanTouch = false
+					end
+				end
 			end)
 		end)
 	)

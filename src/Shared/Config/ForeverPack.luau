@@ -39,23 +39,23 @@ end
 ForeverPack.Rewards = {
 	[1] = {
 		Image = "rbxassetid://81389192039217",
-		Chance = 30,
-		Text = "$500",
+		Chance = 60,
+		Text = "$50",
 		ClaimFunction = function(Player)
-			AddCashToPlayer(Player, 500)
+			AddCashToPlayer(Player, 50)
 		end,
 	},
 	[2] = {
 		Image = "rbxassetid://81389192039217",
-		Chance = 25,
-		Text = "$1k",
+		Chance = 40,
+		Text = "$100",
 		ClaimFunction = function(Player)
 			AddCashToPlayer(Player, 1000)
 		end,
 	},
 	[3] = {
 		Image = "rbxassetid://127283057840884",
-		Chance = 15,
+		Chance = 1,
 		Text = "x2 Luck (5 Minutes)",
 		ClaimFunction = function(Player)
 			AddLuckToPlayer(Player, 2, 300)
@@ -63,7 +63,7 @@ ForeverPack.Rewards = {
 	},
 	[4] = {
 		Image = "rbxassetid://117787260158263",
-		Chance = 8,
+		Chance = 1,
 		Text = "Solar Crate",
 		ClaimFunction = function(Player)
 			AddCrateToPlayer(Player, "Solar")
@@ -71,7 +71,7 @@ ForeverPack.Rewards = {
 	},
 	[5] = {
 		Image = "rbxassetid://108271337314448",
-		Chance = 4,
+		Chance = 0.5,
 		Text = "Void Crate",
 		ClaimFunction = function(Player)
 			AddCrateToPlayer(Player, "Void")
@@ -79,15 +79,15 @@ ForeverPack.Rewards = {
 	},
 	[6] = {
 		Image = "rbxassetid://81389192039217",
-		Chance = 10,
-		Text = "$50k",
+		Chance = 20,
+		Text = "$500",
 		ClaimFunction = function(Player)
-			AddCashToPlayer(Player, 50_000)
+			AddCashToPlayer(Player, 500)
 		end,
 	},
 	[7] = {
 		Image = "rbxassetid://85351769081139",
-		Chance = 3,
+		Chance = 0.5,
 		Text = "Kraken Crate",
 		ClaimFunction = function(Player)
 			AddCrateToPlayer(Player, "Kraken")
@@ -95,31 +95,31 @@ ForeverPack.Rewards = {
 	},
 	[8] = {
 		Image = "rbxassetid://81389192039217",
-		Chance = 4,
-		Text = "$150k",
+		Chance = 10,
+		Text = "$1k",
 		ClaimFunction = function(Player)
-			AddCashToPlayer(Player, 150_000)
+			AddCashToPlayer(Player, 1000)
 		end,
 	},
 	[9] = {
 		Image = "rbxassetid://81389192039217",
-		Chance = 2,
-		Text = "$500k",
+		Chance = 8,
+		Text = "$1.5k",
 		ClaimFunction = function(Player)
-			AddCashToPlayer(Player, 500_000)
+			AddCashToPlayer(Player, 1500)
 		end,
 	},
 	[10] = {
 		Image = "rbxassetid://81389192039217",
-		Chance = 1,
-		Text = "$2M",
+		Chance = 5,
+		Text = "$2k",
 		ClaimFunction = function(Player)
-			AddCashToPlayer(Player, 2_000_000)
+			AddCashToPlayer(Player, 2000)
 		end,
 	},
 	[11] = {
 		Image = "rbxassetid://130097129619276",
-		Chance = 1.5,
+		Chance = 0.15,
 		Text = "GL1TCH Crate",
 		ClaimFunction = function(Player)
 			AddCrateToPlayer(Player, "GL1TCH")
@@ -127,7 +127,7 @@ ForeverPack.Rewards = {
 	},
 	[12] = {
 		Image = "rbxassetid://127283057840884",
-		Chance = 9,
+		Chance = 0.5,
 		Text = "x2 Luck (15 minutes)",
 		ClaimFunction = function(Player)
 			AddLuckToPlayer(Player, 2, 900)
@@ -135,7 +135,7 @@ ForeverPack.Rewards = {
 	},
 	[13] = {
 		Image = "rbxassetid://127283057840884",
-		Chance = 5,
+		Chance = 0.25,
 		Text = "x2 Luck (30 minutes)",
 		ClaimFunction = function(Player)
 			AddLuckToPlayer(Player, 2, 18E2)
@@ -143,7 +143,7 @@ ForeverPack.Rewards = {
 	},
 	[14] = {
 		Image = "rbxassetid://127283057840884",
-		Chance = 3,
+		Chance = 0.15,
 		Text = "x2 Luck (45 minutes)",
 		ClaimFunction = function(Player)
 			AddLuckToPlayer(Player, 2, 27E2)
@@ -152,11 +152,11 @@ ForeverPack.Rewards = {
 }
 
 ForeverPack.PriceGap = {
-	[5] = 3349324735,
-	[10] = 3349324953,
-	[15] = 3349325130,
-	[20] = 3349325279,
-	[25] = 3349325427,
+	[3] = 3349324735,
+	[6] = 3349324953,
+	[9] = 3349325130,
+	[12] = 3349325279,
+	[15] = 3349325427,
 }
 
 ForeverPack.GetPriceFromIndex = function(Index: number): string | number

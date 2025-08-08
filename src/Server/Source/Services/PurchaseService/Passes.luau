@@ -3,6 +3,7 @@ local Remotes = require("@Shared/Remotes")
 local HammerTool = require("@ServerClasses/HammerTool")
 
 local DataUtil = require("@ServerUtility/DataUtil")
+local PlotUtil = require("@ServerUtility/PlotUtil")
 
 local Cache = require("@ServerUtility/Cache")
 
@@ -154,6 +155,11 @@ return {
 			table.insert(PlayerData.ExtraSlots, 11)
 			table.insert(PlayerData.ExtraSlots, 12)
 			DataUtil:SetData(Player, PlayerData)
+		end
+
+		local PlayerPlot = PlotUtil:GetPlayerPlot(Player)
+		if PlayerPlot then
+			PlotUtil:SetupExtraSlots(PlayerPlot)
 		end
 
 		Remotes.ShowNotification:fire(

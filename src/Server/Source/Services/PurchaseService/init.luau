@@ -29,15 +29,11 @@ function PurchaseService:Start()
 		return Enum.ProductPurchaseDecision.NotProcessedYet
 	end
 
-	MarketplaceService.PromptGamePassPurchaseFinished:Connect(
-		function(Player: Player, GamePassId: number, WasPurchased: boolean)
-			if not WasPurchased then
-				return
-			end
-
+	MarketplaceService.PromptGamePassPurchaseFinished:Connect(function(Player: Player, GamePassId: number, _: boolean)
+		if MarketplaceService:UserOwnsGamePassAsync(Player.UserId, GamePassId) then
 			self:AwardGamepass(Player, GamePassId)
 		end
-	)
+	end)
 end
 
 function PurchaseService:SetupPlayerGamepasses(Player: Player)
@@ -61,10 +57,6 @@ function PurchaseService:AwardVIPPhysicalRewards(Player: Player)
 end
 
 function PurchaseService:AwardGamepass(Player: Player, GamePassId: number)
-	repeat
-		task.wait()
-	until not DataUtil.CurrentDataChange[Player]
-
 	local PlayerData = DataUtil:GetData(Player)
 	if PlayerData then
 		if Passes[GamePassId] then

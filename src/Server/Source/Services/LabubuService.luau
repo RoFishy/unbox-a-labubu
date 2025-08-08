@@ -117,6 +117,7 @@ function LabubuService:Start()
 
 				Part.Anchored = false
 				Part.CanCollide = false
+				Part.Massless = true
 
 				local WeldConstraint = Instance.new("WeldConstraint")
 				WeldConstraint.Part0 = RootPart

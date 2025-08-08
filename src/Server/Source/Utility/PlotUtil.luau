@@ -17,6 +17,7 @@ local DataUtil = require("@ServerUtility/DataUtil")
 local GetRarity = require("@Utility/GetRarity")
 
 local CrateConfig = require("@Config/Crates")
+local ToolConfig = require("@Config/Tools")
 local UpgradeConfig = require("@Config/Upgrades")
 
 local Remotes = require("@Shared/Remotes")
@@ -38,6 +39,7 @@ type PlotUtil = {
 	SetupSpawner: (self: PlotUtil, Plot: string) -> (),
 	SetupSkipPrompt: (self: PlotUtil, Plot: string) -> (),
 	SetupGamepasses: (self: PlotUtil, Plot: string) -> (),
+	SetupExtraSlots: (self: PlotUtil, Plot: string) -> (),
 }
 type SlotModel = Folder & {
 	Stand: Part,
@@ -215,23 +217,46 @@ function PlotUtil.SetupSpawner(self: PlotUtil, Plot: string)
 					local _Crate = Crate.new(ChosenCrate, PlotModel.Components.CrateSpawn.Position, Owner)
 					self.Plots[Plot].CurrentCrate = _Crate :: Crate.Crate
 
+					local CrateConnection = Remotes.HitBox:connect(
+						function(Player: Player, BoxHit: Instance, Tool: string)
+							if BoxHit == _Crate.Model then
+								if Player == Owner then
+									local Character = Player.Character or Player.CharacterAdded:Wait()
+
+									local RootPart = Character:FindFirstChild("HumanoidRootPart") :: Part
+
+									if RootPart then
+										if (RootPart.Position - _Crate.Primary.Position).Magnitude <= 15 then
+											local Name = tonumber(Tool)
+											if Name then
+												if _Crate.Config.Health > 0 then
+													local ToolInfo: Types.ToolInfo = ToolConfig[Name]
+													if ToolInfo then
+														_Crate:TakeDamage(ToolInfo.Damage)
+													end
+												end
+											end
+										end
+									end
+								end
+							end
+						end
+					)
+
 					_Crate.Destroying:Wait()
+					CrateConnection()
 				end
 			end)
 		end
 	end
 end
 
-function PlotUtil.AssignPlot(self: PlotUtil, Player: Player)
-	local PlotName = self:GetEmptyPlot()
-	if PlotName then
-		self.Plots[PlotName].Owner = Player
+function PlotUtil.SetupExtraSlots(self: PlotUtil, Plot: string)
+	local PlotModel = Plots:FindFirstChild(Plot) :: PlotModel
 
-		local PlotModel = Plots:FindFirstChild(PlotName) :: PlotModel
-		if PlotModel then
-			PlotModel:SetAttribute("Owner", Player.Name)
-		end
+	local Player = self.Plots[Plot].Owner
 
+	if Player then
 		local PlayerData = DataUtil:GetData(Player)
 		if PlayerData then
 			local ExtraSlots = PlayerData.ExtraSlots
@@ -247,6 +272,20 @@ function PlotUtil.AssignPlot(self: PlotUtil, Player: Player)
 				end
 			end
 		end
+	end
+end
+
+function PlotUtil.AssignPlot(self: PlotUtil, Player: Player)
+	local PlotName = self:GetEmptyPlot()
+	if PlotName then
+		self.Plots[PlotName].Owner = Player
+
+		local PlotModel = Plots:FindFirstChild(PlotName) :: PlotModel
+		if PlotModel then
+			PlotModel:SetAttribute("Owner", Player.Name)
+		end
+
+		self:SetupExtraSlots(PlotName)
 
 		self:TeleportPlayerToPlot(Player)
 		self:SetupSpawner(PlotName)

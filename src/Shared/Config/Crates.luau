@@ -15,6 +15,8 @@ return {
 
 		Image = "rbxassetid://118635082887093",
 
+		GradientLabel = "Common",
+
 		LayoutOrder = 1,
 
 		Chances = {
@@ -36,6 +38,8 @@ return {
 		Price = 250, -- cash p rice
 
 		Image = "rbxassetid://84888084943105",
+
+		GradientLabel = "Common",
 
 		LayoutOrder = 3,
 
@@ -59,6 +63,8 @@ return {
 
 		Image = "rbxassetid://129584799233513",
 
+		GradientLabel = "Uncommon",
+
 		LayoutOrder = 5,
 
 		Chances = {
@@ -80,6 +86,8 @@ return {
 		Price = 3500, -- cash p rice
 
 		Image = "rbxassetid://104570030548954",
+
+		GradientLabel = "Uncommon",
 
 		LayoutOrder = 7,
 
@@ -103,6 +111,8 @@ return {
 
 		Image = "rbxassetid://70622623610806",
 
+		GradientLabel = "Rare",
+
 		LayoutOrder = 9,
 
 		Chances = {
@@ -124,6 +134,8 @@ return {
 		Price = 70000, -- cash p rice
 
 		Image = "rbxassetid://113922224251608",
+
+		GradientLabel = "Rare",
 
 		LayoutOrder = 11,
 
@@ -147,6 +159,8 @@ return {
 
 		Image = "rbxassetid://117787260158263",
 
+		GradientLabel = "Epic",
+
 		LayoutOrder = 13,
 
 		Chances = {
@@ -168,6 +182,8 @@ return {
 		Price = 500000, -- cash p rice
 
 		Image = "rbxassetid://108271337314448",
+
+		GradientLabel = "Legendary",
 
 		LayoutOrder = 15,
 
@@ -192,6 +208,8 @@ return {
 
 		Image = "rbxassetid://85351769081139",
 
+		GradientLabel = "Divine",
+
 		LayoutOrder = 17,
 
 		Chances = {
@@ -213,6 +231,8 @@ return {
 		Price = 15000000, -- cash p rice
 
 		Image = "rbxassetid://130097129619276",
+
+		GradientLabel = "Secret",
 
 		LayoutOrder = 19,
 

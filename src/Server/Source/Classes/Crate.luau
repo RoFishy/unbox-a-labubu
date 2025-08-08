@@ -112,6 +112,8 @@ function Crate.new(Name: string, SpawnLocation: Vector3, Owner: Player): Crate
 
 	self.StartingScale = self.Model:GetScale()
 
+	self.Model:SetAttribute("Crate", true)
+
 	task.delay(0.1, function()
 		self:Init(SpawnLocation)
 	end)
@@ -276,6 +278,7 @@ function Crate.TakeDamage(self: Crate, Amount: number)
 											+ PlayerData.Luck
 											+ CurrentLuck.Value
 										) * OwnerLuck
+										print(Luck)
 									end
 
 									local Size = GetRarity(SizeConfig, function(Name: string)
@@ -402,50 +405,8 @@ function Crate.Spawn(self: Crate, Location: Vector3)
 			end
 		end
 
-		self:SetupConnections()
+		--self:SetupConnections()
 	end)
-	--[[
-	TweenModel.Position(self.Model, EndPosition, TweenInfo.new(1, Enum.EasingStyle.Exponential), function()
-		if Smoke then
-			local Attachment = Smoke:WaitForChild("Attachment") :: Attachment
-			for _, child in Attachment:GetChildren() do
-				if child:IsA("ParticleEmitter") then
-					child = child :: ParticleEmitter
-
-					child.Enabled = true
-
-					task.delay(0.5, function()
-						child.Enabled = false
-					end)
-				end
-			end
-		end
-
-		self:SetupConnections()
-	end)
-	]]
-
-	--[[
-	task.delay(1, function()
-		if Smoke then
-			local Attachment = Smoke:WaitForChild("Attachment") :: Attachment
-			for _, child in Attachment:GetChildren() do
-				if child:IsA("ParticleEmitter") then
-					child = child :: ParticleEmitter
-
-					child.Enabled = true
-
-					task.delay(0.5, function()
-						child.Enabled = false
-					end)
-				end
-			end
-		end
-
-		self.Primary.Anchored = true
-	end)
-	]]
-	--
 end
 
 function Crate.CleanupConnections(self: Crate)

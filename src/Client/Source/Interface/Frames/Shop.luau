@@ -237,6 +237,9 @@ function Shop:Start()
 				return
 			end
 			local Product = ProductsModule.ServerLuck[`x{CurrentLuck.Value * 2}`]
+			if CurrentLuck.Value == 0 then
+				Product = ProductsModule.ServerLuck["x2"]
+			end
 			if Product then
 				MarketplaceService:PromptProductPurchase(LocalPlayer, Product)
 			end

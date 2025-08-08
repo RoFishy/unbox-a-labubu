@@ -1,6 +1,7 @@
 -- // Services
 local MarketplaceService = game:GetService("MarketplaceService")
 local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 -- // plr
 local LocalPlayer = Players.LocalPlayer
@@ -11,6 +12,9 @@ local Replica = require("@Packages/Replica") :: any
 
 -- // Util
 local Button = require("@ClientUtility/Button")
+
+-- // obj
+local Gradients = ReplicatedStorage:WaitForChild("Gradients")
 
 -- // Module
 local InterfaceController = require("@Controllers/InterfaceController")
@@ -135,6 +139,16 @@ function Crates:UpdateShop()
 
 				Clone.LayoutOrder = Data.LayoutOrder
 				DropdownClone.LayoutOrder = Data.LayoutOrder + 1
+
+				local OldGradient = Clone.Rarity:FindFirstChildOfClass("UIGradient") :: UIGradient
+				if OldGradient then
+					OldGradient:Destroy()
+				end
+
+				local NewGradient = Gradients[Data.GradientLabel]:Clone()
+				NewGradient.Parent = Clone.Rarity
+
+				Clone.Rarity.name.Text = Data.GradientLabel
 
 				local RobuxPrice = GetPrice(Data.Product)
 				if RobuxPrice then

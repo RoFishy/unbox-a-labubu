@@ -89,11 +89,19 @@ function Labubu.new(Name: string, Owner: Player, Slot: string?, OfflineEarings: 
 		self.Model:ScaleTo(Config.Scale)
 	end
 
-	for _, d in self.Model:GetDescendants() do
-		if d:IsA("BasePart") then
-			d.CanCollide = false
-		end
+	local Humanoid = self.Model:FindFirstChildWhichIsA("Humanoid") :: Humanoid
+	if Humanoid then
+		Humanoid.PlatformStand = false
+		Humanoid.EvaluateStateMachine = false
 	end
+
+	task.delay(0.05, function()
+		for _, d in self.Model:GetDescendants() do
+			if d:IsA("BasePart") then
+				d.CanCollide = false
+			end
+		end
+	end)
 
 	self:SetupDisplayInfo()
 

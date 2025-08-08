@@ -7,6 +7,8 @@ export type CrateConfig = {
 	RestockMin: number,
 	RestockMax: number,
 
+	GradientLabel: string,
+
 	Product: number,
 	Price: number,
 
