@@ -41,9 +41,14 @@ function PlayerService:Start()
 							Labubu.new(LabubuData.Name, Player, LabubuData.Slot, OfflineEarnings, LabubuData.Size)
 						_Labubu:AddToSlot()
 					end
-
-					LabubuService:ValidatePlot(Player)
 				end
+
+				task.spawn(function()
+					repeat
+						LabubuService:ValidatePlot(Player)
+						task.wait(10)
+					until not Player or not Player.Parent
+				end)
 			else
 				repeat
 					task.wait()

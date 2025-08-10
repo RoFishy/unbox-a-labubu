@@ -93,7 +93,7 @@ function LabubuService:Start()
 
 				Remotes.ShowNotification:fire(
 					PlayerToGive,
-					`Successfully received labubu {LabubuName} from {FirstPlayer.Name}. It is in your backpack.`,
+					`Successfully received labubu {DataTwo.Backpack[LabubuName].Name} from {FirstPlayer.Name}. It is in your backpack.`,
 					Color3.fromRGB(0, 255, 0)
 				)
 			end
